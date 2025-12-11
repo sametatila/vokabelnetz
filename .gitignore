@@ -122,3 +122,5 @@ bin/
 *.rej
 *.patch
 .claude/
+nul
+classpath.txt
