@@ -122,7 +122,7 @@ vokabelnetz/
 | Layer | Technology |
 |-------|------------|
 | **Frontend** | Angular 21, TypeScript, Tailwind CSS |
-| **Backend** | Java 25, Spring Boot 4.0, Spring Security 7 |
+| **Backend** | Java 25, Spring Boot 3.5, Spring Security 7 |
 | **Database** | PostgreSQL 18, Hibernate 7.1 |
 | **Infrastructure** | Docker, Nginx, GitHub Actions |
 
