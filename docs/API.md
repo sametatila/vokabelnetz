@@ -455,7 +455,7 @@ Content-Type: application/json
 ### Get Words (Paginated)
 
 ```http
-GET /api/words?page=0&size=20&level=A1&category=ALLTAG&sort=difficulty,asc
+GET /api/words?page=0&size=20&sort=german
 Authorization: Bearer <access_token>
 ```
 
@@ -463,33 +463,32 @@ Authorization: Bearer <access_token>
 ```json
 {
   "success": true,
-  "data": {
-    "content": [
-      {
-        "id": 1,
-        "german": "arbeiten",
-        "turkish": "çalışmak",
-        "english": "to work",
-        "article": null,
-        "wordType": "VERB",
-        "cefrLevel": "A1",
-        "exampleSentenceDe": "Ich arbeite in einem Büro.",
-        "exampleSentenceTr": "Bir ofiste çalışıyorum.",
-        "exampleSentenceEn": "I work in an office.",
-        "pronunciationUrl": "/assets/audio/arbeiten.mp3",
-        "phoneticSpelling": "ˈaʁbaɪ̯tn̩",
-        "difficultyRating": 920,
-        "category": "ARBEIT_BERUF"
-      }
-    ],
-    "pageable": {
-      "pageNumber": 0,
-      "pageSize": 20
-    },
-    "totalElements": 650,
-    "totalPages": 33,
-    "first": true,
-    "last": false
+  "data": [
+    {
+      "id": 1,
+      "german": "arbeiten",
+      "translations": {
+        "tr": "çalışmak",
+        "en": "to work"
+      },
+      "article": null,
+      "wordType": "VERB",
+      "cefrLevel": "A1",
+      "exampleSentences": {
+        "de": "Ich arbeite in einem Büro.",
+        "tr": "Bir ofiste çalışıyorum.",
+        "en": "I work in an office."
+      },
+      "audioUrl": "/assets/audio/arbeiten.mp3",
+      "phoneticSpelling": "ˈaʁbaɪ̯tn̩",
+      "difficultyRating": 920,
+      "category": "ARBEIT_BERUF"
+    }
+  ],
+  "meta": {
+    "page": 0,
+    "size": 20,
+    "total": 650
   }
 }
 ```
@@ -508,16 +507,20 @@ Authorization: Bearer <access_token>
   "data": {
     "id": 1,
     "german": "das Haus",
-    "turkish": "ev",
-    "english": "house",
+    "translations": {
+      "tr": "ev",
+      "en": "house"
+    },
     "article": "das",
     "wordType": "NOUN",
     "pluralForm": "Häuser",
     "cefrLevel": "A1",
-    "exampleSentenceDe": "Wir wohnen in einem großen Haus.",
-    "exampleSentenceTr": "Büyük bir evde yaşıyoruz.",
-    "exampleSentenceEn": "We live in a big house.",
-    "pronunciationUrl": "/assets/audio/haus.mp3",
+    "exampleSentences": {
+      "de": "Wir wohnen in einem großen Haus.",
+      "tr": "Büyük bir evde yaşıyoruz.",
+      "en": "We live in a big house."
+    },
+    "audioUrl": "/assets/audio/haus.mp3",
     "phoneticSpelling": "haʊ̯s",
     "difficultyRating": 850,
     "category": "WOHNEN",
@@ -529,10 +532,10 @@ Authorization: Bearer <access_token>
 
 ### Search Words
 
-Supports fuzzy search using PostgreSQL's `pg_trgm` extension. Handles typos and partial matches.
+Search words by German term.
 
 ```http
-GET /api/words/search?q=Hau&lang=german&fuzzy=true
+GET /api/words/search?q=Haus&page=0&size=20
 Authorization: Bearer <access_token>
 ```
 
@@ -540,38 +543,109 @@ Authorization: Bearer <access_token>
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `q` | string | required | Search query |
-| `lang` | string | `german` | Field to search: `german`, `turkish`, `english` |
-| `fuzzy` | boolean | `true` | Enable fuzzy matching (tolerates typos) |
-| `threshold` | float | `0.3` | Similarity threshold for fuzzy search (0.0-1.0) |
-| `limit` | int | `20` | Maximum results |
+| `q` | string | required | Search query (German term) |
+| `page` | int | `0` | Page number |
+| `size` | int | `20` | Page size |
+
+**Response (200 OK):**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": 42,
+      "german": "das Haus",
+      "translations": {
+        "tr": "ev",
+        "en": "house"
+      },
+      "cefrLevel": "A1",
+      "category": "WOHNEN"
+    },
+    {
+      "id": 156,
+      "german": "der Haushalt",
+      "translations": {
+        "tr": "ev halkı",
+        "en": "household"
+      },
+      "cefrLevel": "A2",
+      "category": "WOHNEN"
+    }
+  ],
+  "meta": {
+    "page": 0,
+    "size": 20,
+    "total": 2
+  }
+}
+```
+
+### Get Random Word
+
+Get a random word, optionally filtered by CEFR level.
+
+```http
+GET /api/words/random?level=A1
+Authorization: Bearer <access_token>
+```
+
+**Query Parameters:**
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `level` | string | optional | CEFR level filter (A1, A2, B1, B2, C1, C2) |
 
 **Response (200 OK):**
 ```json
 {
   "success": true,
   "data": {
-    "query": "Hau",
-    "fuzzy": true,
-    "results": [
-      {
-        "id": 42,
-        "german": "Haus",
-        "turkish": "ev",
-        "english": "house",
-        "similarity": 0.75,
-        "cefrLevel": "A1"
-      },
-      {
-        "id": 156,
-        "german": "Haupt",
-        "turkish": "baş, ana",
-        "english": "main, head",
-        "similarity": 0.60,
-        "cefrLevel": "A2"
-      }
-    ],
-    "totalResults": 2
+    "id": 42,
+    "german": "das Haus",
+    "translations": {
+      "tr": "ev",
+      "en": "house"
+    },
+    "article": "das",
+    "wordType": "NOUN",
+    "cefrLevel": "A1",
+    "exampleSentences": {
+      "de": "Wir wohnen in einem großen Haus.",
+      "tr": "Büyük bir evde yaşıyoruz.",
+      "en": "We live in a big house."
+    },
+    "audioUrl": "/assets/audio/haus.mp3",
+    "difficultyRating": 850,
+    "category": "WOHNEN"
+  }
+}
+```
+
+### Get Word Statistics
+
+Get overall word statistics including counts by CEFR level.
+
+```http
+GET /api/words/stats
+Authorization: Bearer <access_token>
+```
+
+**Response (200 OK):**
+```json
+{
+  "success": true,
+  "data": {
+    "totalWords": 5000,
+    "activeWords": 4850,
+    "byLevel": {
+      "A1": 650,
+      "A2": 1300,
+      "B1": 2400,
+      "B2": 500,
+      "C1": 100,
+      "C2": 50
+    }
   }
 }
 ```
@@ -638,15 +712,19 @@ Authorization: Bearer <access_token>
     "word": {
       "id": 42,
       "german": "verstehen",
-      "turkish": "anlamak",
-      "english": "to understand",
+      "translations": {
+        "tr": "anlamak",
+        "en": "to understand"
+      },
       "article": null,
       "wordType": "VERB",
       "cefrLevel": "A1",
-      "exampleSentenceDe": "Ich verstehe dich nicht.",
-      "exampleSentenceTr": "Seni anlamıyorum.",
-      "exampleSentenceEn": "I don't understand you.",
-      "pronunciationUrl": "/assets/audio/verstehen.mp3",
+      "exampleSentences": {
+        "de": "Ich verstehe dich nicht.",
+        "tr": "Seni anlamıyorum.",
+        "en": "I don't understand you."
+      },
+      "audioUrl": "/assets/audio/verstehen.mp3",
       "difficultyRating": 1050
     },
     "isReview": true,
@@ -1100,7 +1178,7 @@ X-RateLimit-Reset: 1704812400
 
 Interactive API documentation is available at:
 
-- **Development:** `http://localhost:8080/swagger-ui.html`
-- **Production:** `https://api.vokabelnetz.com/swagger-ui.html`
+- **Development:** `http://localhost:8080/api/swagger-ui/index.html`
+- **Production:** `https://api.vokabelnetz.com/api/swagger-ui/index.html`
 
-OpenAPI JSON specification: `/v3/api-docs`
+OpenAPI JSON specification: `/api/v3/api-docs`

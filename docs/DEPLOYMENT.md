@@ -506,8 +506,8 @@ APP_DATA_SEED_MODE=UPDATE  # INIT, UPDATE, or VALIDATE
 # ===========================================
 MAIL_HOST=smtp.gmail.com
 MAIL_PORT=587
-MAIL_USERNAME=noreply@vokabelnetz.com
-MAIL_PASSWORD=your-app-password
+MAIL_USERNAME=<your-email@example.com>
+MAIL_PASSWORD=<your-app-specific-password>
 
 # ===========================================
 # MONITORING & ALERTS
