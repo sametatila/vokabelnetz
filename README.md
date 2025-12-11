@@ -142,10 +142,10 @@ Vocabulary based on official **Goethe Institut** word lists:
 
 ## 🗺 Roadmap
 
-- [x] Core flashcard system
-- [x] SM-2 + Elo algorithms
 - [x] User authentication
-- [x] Progress tracking
+- [x] SM-2 + Elo algorithms
+- [ ] Core flashcard system
+- [ ] Progress tracking
 - [ ] Gamification features
 - [ ] Community features
 - [ ] Advanced statistics & insights
