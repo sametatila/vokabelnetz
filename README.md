@@ -158,7 +158,7 @@ Contributions are welcome! Please read our [Contributing Guide](docs/CONTRIBUTIN
 
 ```bash
 # Fork & clone
-git clone https://github.com/yourusername/vokabelnetz.git
+git clone https://github.com/sametatila/vokabelnetz.git
 
 # Create feature branch
 git checkout -b feature/amazing-feature

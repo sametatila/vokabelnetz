@@ -29,69 +29,69 @@ This document describes the PostgreSQL database schema, migrations, and data see
 ## Entity Relationship Diagram
 
 ```
-┌───────────────────────────────────────────────────────────────────────────────────┐
-│                              DATABASE SCHEMA                                       │
-├───────────────────────────────────────────────────────────────────────────────────┤
-│                                                                                    │
-│  ┌─────────────────────────┐              ┌─────────────────────────────┐         │
-│  │         users           │              │          words              │         │
-│  ├─────────────────────────┤              ├─────────────────────────────┤         │
-│  │ id (PK) BIGSERIAL       │              │ id (PK) BIGSERIAL           │         │
-│  │ email VARCHAR(255) NN   │              │ german VARCHAR(255) NN      │         │
-│  │ password_hash VARCHAR   │              │ turkish VARCHAR(255)        │         │
-│  │ display_name VARCHAR    │              │ english VARCHAR(255)        │         │
-│  │ elo_rating INT [1000]   │              │ article VARCHAR(10)         │         │
-│  │ current_streak INT [0]  │              │ word_type ENUM              │         │
-│  │ longest_streak INT [0]  │              │ cefr_level ENUM NN          │         │
-│  │ ui_language ENUM        │              │ example_sentence_de TEXT    │         │
-│  │ source_language ENUM    │              │ example_sentence_tr TEXT    │         │
-│  │ achievements JSONB []   │              │ example_sentence_en TEXT    │         │
-│  │ role VARCHAR [USER]     │              │ difficulty_rating INT [1000]│         │
-│  │ deleted_at TIMESTAMP    │              │ category ENUM               │         │
-│  │ created_at TIMESTAMP    │              │ category ENUM               │         │
-│  │ updated_at TIMESTAMP    │              │ created_at TIMESTAMP        │         │
-│  └─────────────┬───────────┘              └──────────────┬──────────────┘         │
-│                │                                         │                        │
-│  UNIQUE INDEX: email WHERE deleted_at IS NULL            │                        │
-│                │ 1:N                               1:N   │                        │
-│                │                                         │                        │
-│                ▼                                         ▼                        │
-│  ┌─────────────────────────────────────────────────────────────────────┐          │
-│  │                      user_word_progress                              │          │
-│  ├─────────────────────────────────────────────────────────────────────┤          │
-│  │ id (PK) BIGSERIAL                                                   │          │
-│  │ user_id (FK) → users(id)                                            │          │
-│  │ word_id (FK) → words(id)                                            │          │
-│  │ ease_factor DECIMAL(4,2) [2.5]    -- SM-2 ease factor               │          │
-│  │ repetition INT [0]                 -- SM-2 repetition count          │          │
-│  │ interval_days INT [1]              -- SM-2 interval                  │          │
-│  │ next_review_at TIMESTAMP                                             │          │
-│  │ is_learned BOOLEAN [F]                                               │          │
-│  │ UNIQUE(user_id, word_id)                                             │          │
-│  └─────────────────────────────────────────────────────────────────────┘          │
-│                                                                                    │
-│  ┌───────────────────┐  ┌───────────────────┐  ┌───────────────────────┐          │
-│  │ learning_sessions │  │  refresh_tokens   │  │   user_preferences    │          │
-│  │                   │  │                   │  │                       │          │
-│  │ session_type ENUM │  │ token TEXT UQ     │  │ ui_language ENUM      │          │
-│  │ cefr_level ENUM   │  │ expires_at TS     │  │ source_language ENUM  │          │
-│  │ words_reviewed    │  │ is_revoked BOOL   │  │ daily_word_goal INT   │          │
-│  │ accuracy DECIMAL  │  │                   │  │ dark_mode BOOLEAN     │          │
-│  └───────────────────┘  └───────────────────┘  └───────────────────────┘          │
-│                                                                                    │
-│  ┌───────────────────┐  ┌───────────────────┐                                     │
-│  │    daily_stats    │  │  streak_history   │                                     │
-│  │                   │  │                   │                                     │
-│  │ stat_date DATE UQ │  │ streak_date DATE  │                                     │
-│  │ words_learned     │  │ streak_count INT  │                                     │
-│  │ words_reviewed    │  │ freeze_used BOOL  │                                     │
-│  │ elo_start/end     │  │                   │                                     │
-│  └───────────────────┘  └───────────────────┘                                     │
-│                                                                                    │
-│  Note: email uniqueness enforced via partial index (WHERE deleted_at IS NULL)     │
-│  Note: achievements stored as JSONB array in users table                          │
-│                                                                                    │
-└───────────────────────────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                              DATABASE SCHEMA                                 │
+├──────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│  ┌─────────────────────────┐              ┌──────────────────────────────┐   │
+│  │         users           │              │          words               │   │
+│  ├─────────────────────────┤              ├──────────────────────────────┤   │
+│  │ id (PK) BIGSERIAL       │              │ id (PK) BIGSERIAL            │   │
+│  │ email VARCHAR(255) NN   │              │ german VARCHAR(255) NN       │   │
+│  │ password_hash VARCHAR   │              │ turkish VARCHAR(255)         │   │
+│  │ display_name VARCHAR    │              │ english VARCHAR(255)         │   │
+│  │ elo_rating INT [1000]   │              │ article VARCHAR(10)          │   │
+│  │ current_streak INT [0]  │              │ word_type ENUM               │   │
+│  │ longest_streak INT [0]  │              │ cefr_level ENUM NN           │   │
+│  │ ui_language ENUM        │              │ example_sentence_de TEXT     │   │
+│  │ source_language ENUM    │              │ example_sentence_tr TEXT     │   │
+│  │ achievements JSONB []   │              │ example_sentence_en TEXT     │   │
+│  │ role VARCHAR [USER]     │              │ difficulty_rating INT [1000] │   │
+│  │ deleted_at TIMESTAMP    │              │ category ENUM                │   │
+│  │ created_at TIMESTAMP    │              │ category ENUM                │   │
+│  │ updated_at TIMESTAMP    │              │ created_at TIMESTAMP         │   │
+│  └─────────────┬───────────┘              └──────────────┬───────────────┘   │
+│                │                                         │                   │
+│  UNIQUE INDEX: email WHERE deleted_at IS NULL            │                   │
+│                │ 1:N                               1:N   │                   │
+│                │                                         │                   │
+│                ▼                                         ▼                   │
+│  ┌──────────────────────────────────────────────────────────────────────┐    │
+│  │                      user_word_progress                              │    │
+│  ├──────────────────────────────────────────────────────────────────────┤    │
+│  │ id (PK) BIGSERIAL                                                    │    │
+│  │ user_id (FK) → users(id)                                             │    │
+│  │ word_id (FK) → words(id)                                             │    │
+│  │ ease_factor DECIMAL(4,2) [2.5]    -- SM-2 ease factor                │    │
+│  │ repetition INT [0]                 -- SM-2 repetition count          │    │
+│  │ interval_days INT [1]              -- SM-2 interval                  │    │
+│  │ next_review_at TIMESTAMP                                             │    │
+│  │ is_learned BOOLEAN [F]                                               │    │
+│  │ UNIQUE(user_id, word_id)                                             │    │
+│  └──────────────────────────────────────────────────────────────────────┘    │
+│                                                                              │
+│  ┌───────────────────┐  ┌───────────────────┐  ┌────────────────────────┐    │
+│  │ learning_sessions │  │  refresh_tokens   │  │   user_preferences     │    │
+│  │                   │  │                   │  │                        │    │
+│  │ session_type ENUM │  │ token TEXT UQ     │  │ ui_language ENUM       │    │
+│  │ cefr_level ENUM   │  │ expires_at TS     │  │ source_language ENUM   │    │
+│  │ words_reviewed    │  │ is_revoked BOOL   │  │ daily_word_goal INT    │    │
+│  │ accuracy DECIMAL  │  │                   │  │ dark_mode BOOLEAN      │    │
+│  └───────────────────┘  └───────────────────┘  └────────────────────────┘    │
+│                                                                              │
+│  ┌───────────────────┐  ┌───────────────────┐                                │
+│  │    daily_stats    │  │  streak_history   │                                │
+│  │                   │  │                   │                                │
+│  │ stat_date DATE UQ │  │ streak_date DATE  │                                │
+│  │ words_learned     │  │ streak_count INT  │                                │
+│  │ words_reviewed    │  │ freeze_used BOOL  │                                │
+│  │ elo_start/end     │  │                   │                                │
+│  └───────────────────┘  └───────────────────┘                                │
+│                                                                              │
+│  Note: email uniqueness enforced via partial index (WHERE deleted_at IS NULL)│
+│  Note: achievements stored as JSONB array in users table                     │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
 
 Legend: PK = Primary Key, FK = Foreign Key, UQ = Unique, NN = Not Null, [x] = Default
 ```
@@ -838,27 +838,27 @@ CREATE TRIGGER update_user_preferences_updated_at
 ### Pipeline Overview
 
 ```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                        DATA SEEDING PIPELINE                                 │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                              │
-│  ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────────────┐  │
-│  │  JSON Source    │    │   Validation    │    │    Database Insert      │  │
-│  │  Files          │───▶│   & Transform   │───▶│    (Batch Processing)   │  │
-│  │                 │    │                 │    │                         │  │
-│  │  words-a1.json  │    │  - Schema check │    │  - Upsert logic         │  │
-│  │  words-a2.json  │    │  - Type mapping │    │  - Conflict handling    │  │
-│  │  words-b1.json  │    │  - Enrichment   │    │  - Transaction mgmt     │  │
-│  └─────────────────┘    └─────────────────┘    └─────────────────────────┘  │
-│                                                                              │
-│  Execution Modes:                                                            │
-│  ┌──────────────────────────────────────────────────────────────────────┐   │
-│  │  1. INIT     - First-time full load (truncate + insert)              │   │
-│  │  2. UPDATE   - Incremental updates (upsert, preserve user progress)  │   │
-│  │  3. VALIDATE - Dry-run to check data integrity                       │   │
-│  └──────────────────────────────────────────────────────────────────────┘   │
-│                                                                              │
-└─────────────────────────────────────────────────────────────────────────────┘
+┌────────────────────────────────────────────────────────────────────────────┐
+│                        DATA SEEDING PIPELINE                               │
+├────────────────────────────────────────────────────────────────────────────┤
+│                                                                            │
+│  ┌─────────────────┐    ┌─────────────────┐    ┌────────────────────────┐  │
+│  │  JSON Source    │    │   Validation    │    │    Database Insert     │  │
+│  │  Files          │───▶│   & Transform   │───▶│    (Batch Processing)  │  │
+│  │                 │    │                 │    │                        │  │
+│  │  words-a1.json  │    │  - Schema check │    │  - Upsert logic        │  │
+│  │  words-a2.json  │    │  - Type mapping │    │  - Conflict handling   │  │
+│  │  words-b1.json  │    │  - Enrichment   │    │  - Transaction mgmt    │  │
+│  └─────────────────┘    └─────────────────┘    └────────────────────────┘  │
+│                                                                            │
+│  Execution Modes:                                                          │
+│  ┌──────────────────────────────────────────────────────────────────────┐  │
+│  │  1. INIT     - First-time full load (truncate + insert)              │  │
+│  │  2. UPDATE   - Incremental updates (upsert, preserve user progress)  │  │
+│  │  3. VALIDATE - Dry-run to check data integrity                       │  │
+│  └──────────────────────────────────────────────────────────────────────┘  │
+│                                                                            │
+└────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ### JSON Source Format

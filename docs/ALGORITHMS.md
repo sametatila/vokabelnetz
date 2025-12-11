@@ -265,36 +265,36 @@ The Elo rating system, developed by Arpad Elo for chess, measures relative skill
 ### Core Concept
 
 ```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                        ELO RATING SYSTEM                                     │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                              │
-│  Both users AND words have ratings:                                          │
-│                                                                              │
-│  ┌────────────────────────────────────────────────────────────────────┐     │
-│  │                    RATING SCALE                                    │     │
-│  │                                                                    │     │
-│  │  User Ratings:                    Word Difficulty:                │     │
-│  │  ├─ 0-800    : Beginner          ├─ 0-800    : Very Easy (A1)    │     │
-│  │  ├─ 800-1200 : Elementary        ├─ 800-1200 : Easy (A1-A2)      │     │
-│  │  ├─ 1200-1600: Intermediate      ├─ 1200-1600: Medium (A2-B1)    │     │
-│  │  ├─ 1600-2000: Advanced          ├─ 1600-2000: Hard (B1-B2)      │     │
-│  │  └─ 2000+    : Expert            └─ 2000+    : Very Hard (B2+)   │     │
-│  │                                                                    │     │
-│  │  Default: 1000 (both users and words)                             │     │
-│  └────────────────────────────────────────────────────────────────────┘     │
-│                                                                              │
-│  Matching Example:                                                           │
-│                                                                              │
-│  User (1200) vs Word (1150):                                                │
-│                                                                              │
-│  User:  ████████████░░░░░░░░ (1200)                                        │
-│  Word:  ███████████░░░░░░░░░ (1150)                                        │
-│                                                                              │
-│  Expected success rate: ~57% (user slightly stronger)                       │
-│  This is the "optimal challenge zone" for learning!                         │
-│                                                                              │
-└─────────────────────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────────┐
+│                        ELO RATING SYSTEM                                 │
+├──────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  Both users AND words have ratings:                                      │
+│                                                                          │
+│  ┌────────────────────────────────────────────────────────────────────┐  │
+│  │                    RATING SCALE                                    │  │
+│  │                                                                    │  │
+│  │  User Ratings:                    Word Difficulty:                 │  │
+│  │  ├─ 0-800    : Beginner          ├─ 0-800    : Very Easy (A1)      │  │
+│  │  ├─ 800-1200 : Elementary        ├─ 800-1200 : Easy (A1-A2)        │  │
+│  │  ├─ 1200-1600: Intermediate      ├─ 1200-1600: Medium (A2-B1)      │  │
+│  │  ├─ 1600-2000: Advanced          ├─ 1600-2000: Hard (B1-B2)        │  │
+│  │  └─ 2000+    : Expert            └─ 2000+    : Very Hard (B2+)     │  │
+│  │                                                                    │  │
+│  │  Default: 1000 (both users and words)                              │  │
+│  └────────────────────────────────────────────────────────────────────┘  │
+│                                                                          │
+│  Matching Example:                                                       │
+│                                                                          │
+│  User (1200) vs Word (1150):                                             │
+│                                                                          │
+│  User:  ████████████░░░░░░░░ (1200)                                      │
+│  Word:  ███████████░░░░░░░░░ (1150)                                      │
+│                                                                          │
+│  Expected success rate: ~57% (user slightly stronger)                    │
+│  This is the "optimal challenge zone" for learning!                      │
+│                                                                          │
+└──────────────────────────────────────────────────────────────────────────┘
 ```
 
 ### Formulas
@@ -477,45 +477,45 @@ The streak system motivates daily learning by tracking consecutive days of activ
 ```
 
 ```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                         STREAK SYSTEM ARCHITECTURE                           │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                              │
-│  ┌─────────────────────────────────────────────────────────────────────┐    │
-│  │                        STREAK CALCULATION                            │    │
-│  │                                                                      │    │
-│  │   User Timezone: Europe/Istanbul (UTC+3)                            │    │
-│  │   Day Boundary: 00:00 local time                                    │    │
-│  │   Minimum Activity: 1 word reviewed                                 │    │
-│  │                                                                      │    │
-│  │   ┌─────┐  ┌─────┐  ┌─────┐  ┌─────┐  ┌─────┐  ┌─────┐  ┌─────┐    │    │
-│  │   │ Mon │──│ Tue │──│ Wed │──│ Thu │──│ Fri │──│ Sat │──│ Sun │    │    │
-│  │   │  ✓  │  │  ✓  │  │  ✓  │  │  ✗  │  │  ✓  │  │  ✓  │  │  ?  │    │    │
-│  │   └─────┘  └─────┘  └─────┘  └─────┘  └─────┘  └─────┘  └─────┘    │    │
-│  │                           │                                          │    │
-│  │                     Streak broken!                                   │    │
-│  │                     (unless freeze used)                             │    │
-│  │                                                                      │    │
-│  └─────────────────────────────────────────────────────────────────────┘    │
-│                                                                              │
-│  ┌─────────────────────────────────────────────────────────────────────┐    │
-│  │                     STREAK FREEZE SYSTEM                             │    │
-│  │                                                                      │    │
-│  │   • Users earn 1 freeze for every 7-day streak milestone            │    │
-│  │   • Maximum 3 freezes can be stored                                 │    │
-│  │   • Freeze auto-activates if day ends without activity              │    │
-│  │   • Manual freeze activation available in settings                  │    │
-│  │                                                                      │    │
-│  │   Milestones:                                                       │    │
-│  │   ├─ 7 days   → +1 freeze                                          │    │
-│  │   ├─ 14 days  → +1 freeze                                          │    │
-│  │   ├─ 21 days  → +1 freeze                                          │    │
-│  │   ├─ 30 days  → +1 freeze (+ badge)                                │    │
-│  │   └─ (continues every 7 days)                                       │    │
-│  │                                                                      │    │
-│  └─────────────────────────────────────────────────────────────────────┘    │
-│                                                                              │
-└─────────────────────────────────────────────────────────────────────────────┘
+┌───────────────────────────────────────────────────────────────────────────┐
+│                         STREAK SYSTEM ARCHITECTURE                        │
+├───────────────────────────────────────────────────────────────────────────┤
+│                                                                           │
+│  ┌─────────────────────────────────────────────────────────────────────┐  │
+│  │                        STREAK CALCULATION                           │  │
+│  │                                                                     │  │
+│  │   User Timezone: Europe/Istanbul (UTC+3)                            │  │
+│  │   Day Boundary: 00:00 local time                                    │  │
+│  │   Minimum Activity: 1 word reviewed                                 │  │
+│  │                                                                     │  │
+│  │   ┌─────┐  ┌─────┐  ┌─────┐  ┌─────┐  ┌─────┐  ┌─────┐  ┌─────┐     │  │
+│  │   │ Mon │──│ Tue │──│ Wed │──│ Thu │──│ Fri │──│ Sat │──│ Sun │     │  │
+│  │   │  ✓  │  │  ✓  │  │  ✓  │  │  ✗  │  │  ✓  │  │  ✓  │  │  ?  │     │  │
+│  │   └─────┘  └─────┘  └─────┘  └─────┘  └─────┘  └─────┘  └─────┘     │  │
+│  │                           │                                         │  │
+│  │                     Streak broken!                                  │  │
+│  │                     (unless freeze used)                            │  │
+│  │                                                                     │  │
+│  └─────────────────────────────────────────────────────────────────────┘  │
+│                                                                           │
+│  ┌─────────────────────────────────────────────────────────────────────┐  │
+│  │                     STREAK FREEZE SYSTEM                            │  │
+│  │                                                                     │  │
+│  │   • Users earn 1 freeze for every 7-day streak milestone            │  │
+│  │   • Maximum 3 freezes can be stored                                 │  │
+│  │   • Freeze auto-activates if day ends without activity              │  │
+│  │   • Manual freeze activation available in settings                  │  │
+│  │                                                                     │  │
+│  │   Milestones:                                                       │  │
+│  │   ├─ 7 days   → +1 freeze                                           │  │
+│  │   ├─ 14 days  → +1 freeze                                           │  │
+│  │   ├─ 21 days  → +1 freeze                                           │  │
+│  │   ├─ 30 days  → +1 freeze (+ badge)                                 │  │
+│  │   └─ (continues every 7 days)                                       │  │
+│  │                                                                     │  │
+│  └─────────────────────────────────────────────────────────────────────┘  │
+│                                                                           │
+└───────────────────────────────────────────────────────────────────────────┘
 ```
 
 ### Streak States

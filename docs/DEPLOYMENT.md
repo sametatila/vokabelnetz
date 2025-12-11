@@ -20,49 +20,49 @@ This document describes how to deploy Vokabelnetz to production.
 ### Production Deployment
 
 ```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                      PRODUCTION DEPLOYMENT ARCHITECTURE                      │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                              │
-│                            ┌─────────────────┐                               │
-│                            │   Cloudflare    │                               │
-│                            │   (CDN + SSL)   │                               │
-│                            └────────┬────────┘                               │
-│                                     │                                        │
-│                                     ▼                                        │
-│  ┌──────────────────────────────────────────────────────────────────────┐   │
-│  │                          NGINX REVERSE PROXY                          │   │
-│  │                           (Port 80/443)                               │   │
-│  │                                                                       │   │
-│  │  ┌─────────────────────────────────────────────────────────────────┐ │   │
-│  │  │  Location /         → Angular Static Files (SPA)                │ │   │
-│  │  │  Location /api/*    → Spring Boot Backend (proxy_pass)          │ │   │
-│  │  │  Location /assets/* → Static Assets (caching)                   │ │   │
-│  │  └─────────────────────────────────────────────────────────────────┘ │   │
-│  └──────────────────────────────────────────────────────────────────────┘   │
-│                     │                              │                         │
-│                     ▼                              ▼                         │
-│  ┌─────────────────────────────┐  ┌─────────────────────────────────────┐   │
-│  │     Angular Frontend        │  │      Spring Boot Backend            │   │
-│  │     (Static Build)          │  │        (Port 8080)                  │   │
-│  │                             │  │                                     │   │
-│  │  /usr/share/nginx/html/     │  │  - REST API                         │   │
-│  │  ├── index.html             │  │  - JWT Authentication               │   │
-│  │  ├── main.js                │  │  - Business Logic                   │   │
-│  │  ├── styles.css             │  │                                     │   │
-│  │  └── assets/                │  │                                     │   │
-│  └─────────────────────────────┘  └──────────────┬──────────────────────┘   │
-│                                                   │                          │
-│                                                   ▼                          │
-│                                   ┌─────────────────────────────────────┐   │
-│                                   │         PostgreSQL 18               │   │
-│                                   │          (Port 5432)                │   │
-│                                   │                                     │   │
-│                                   │  - Persistent Volume                │   │
-│                                   │  - Daily Backups                    │   │
-│                                   └─────────────────────────────────────┘   │
-│                                                                              │
-└─────────────────────────────────────────────────────────────────────────────┘
+┌────────────────────────────────────────────────────────────────────────────┐
+│                      PRODUCTION DEPLOYMENT ARCHITECTURE                    │
+├────────────────────────────────────────────────────────────────────────────┤
+│                                                                            │
+│                            ┌─────────────────┐                             │
+│                            │   Cloudflare    │                             │
+│                            │   (CDN + SSL)   │                             │
+│                            └────────┬────────┘                             │
+│                                     │                                      │
+│                                     ▼                                      │
+│  ┌──────────────────────────────────────────────────────────────────────┐  │
+│  │                          NGINX REVERSE PROXY                         │  │
+│  │                           (Port 80/443)                              │  │
+│  │                                                                      │  │
+│  │  ┌─────────────────────────────────────────────────────────────────┐ │  │
+│  │  │  Location /         → Angular Static Files (SPA)                │ │  │
+│  │  │  Location /api/*    → Spring Boot Backend (proxy_pass)          │ │  │
+│  │  │  Location /assets/* → Static Assets (caching)                   │ │  │
+│  │  └─────────────────────────────────────────────────────────────────┘ │  │
+│  └──────────────────────────────────────────────────────────────────────┘  │
+│                     │                              │                       │
+│                     ▼                              ▼                       │
+│  ┌─────────────────────────────┐  ┌─────────────────────────────────────┐  │
+│  │     Angular Frontend        │  │      Spring Boot Backend            │  │
+│  │     (Static Build)          │  │        (Port 8080)                  │  │
+│  │                             │  │                                     │  │
+│  │  /usr/share/nginx/html/     │  │  - REST API                         │  │
+│  │  ├── index.html             │  │  - JWT Authentication               │  │
+│  │  ├── main.js                │  │  - Business Logic                   │  │
+│  │  ├── styles.css             │  │                                     │  │
+│  │  └── assets/                │  │                                     │  │
+│  └─────────────────────────────┘  └──────────────┬──────────────────────┘  │
+│                                                   │                        │
+│                                                   ▼                        │
+│                                   ┌─────────────────────────────────────┐  │
+│                                   │         PostgreSQL 18               │  │
+│                                   │          (Port 5432)                │  │
+│                                   │                                     │  │
+│                                   │  - Persistent Volume                │  │
+│                                   │  - Daily Backups                    │  │
+│                                   └─────────────────────────────────────┘  │
+│                                                                            │
+└────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -941,42 +941,42 @@ Action Taken: Account locked for 15 minutes
 ## Deployment Checklist
 
 ```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                       PRODUCTION DEPLOYMENT CHECKLIST                        │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                              │
-│  Pre-Deployment:                                                             │
-│  □ All tests passing (CI green)                                             │
-│  □ Environment variables configured                                         │
-│  □ SSL certificates valid (check expiry)                                    │
-│  □ Database migrations reviewed                                             │
-│  □ Backup created and verified                                              │
-│  □ Rollback plan documented                                                 │
-│                                                                              │
-│  Deployment:                                                                 │
-│  □ Pull latest Docker images                                                │
-│  □ Run database migrations                                                  │
-│  □ Start containers                                                         │
-│  □ Verify health check endpoints                                            │
-│                                                                              │
-│  Post-Deployment:                                                            │
-│  □ Smoke test critical paths:                                               │
-│      □ User registration                                                    │
-│      □ User login                                                           │
-│      □ Start learning session                                               │
-│      □ Submit answer                                                        │
-│  □ Monitor error rates (first 30 minutes)                                   │
-│  □ Check performance metrics                                                │
-│  □ Verify SSL/HTTPS working                                                 │
-│  □ Test language switching (TR/EN)                                          │
-│                                                                              │
-│  Rollback (if needed):                                                       │
-│  □ docker-compose -f docker-compose.prod.yml down                           │
-│  □ docker tag vokabelnetz/backend:previous vokabelnetz/backend:latest       │
-│  □ docker-compose -f docker-compose.prod.yml up -d                          │
-│  □ Restore database from backup if needed                                   │
-│                                                                              │
-└─────────────────────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────────┐
+│                       PRODUCTION DEPLOYMENT CHECKLIST                    │
+├──────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  Pre-Deployment:                                                         │
+│  □ All tests passing (CI green)                                          │
+│  □ Environment variables configured                                      │
+│  □ SSL certificates valid (check expiry)                                 │
+│  □ Database migrations reviewed                                          │
+│  □ Backup created and verified                                           │
+│  □ Rollback plan documented                                              │
+│                                                                          │
+│  Deployment:                                                             │
+│  □ Pull latest Docker images                                             │
+│  □ Run database migrations                                               │
+│  □ Start containers                                                      │
+│  □ Verify health check endpoints                                         │
+│                                                                          │
+│  Post-Deployment:                                                        │
+│  □ Smoke test critical paths:                                            │
+│      □ User registration                                                 │
+│      □ User login                                                        │
+│      □ Start learning session                                            │
+│      □ Submit answer                                                     │
+│  □ Monitor error rates (first 30 minutes)                                │
+│  □ Check performance metrics                                             │
+│  □ Verify SSL/HTTPS working                                              │
+│  □ Test language switching (TR/EN)                                       │
+│                                                                          │
+│  Rollback (if needed):                                                   │
+│  □ docker-compose -f docker-compose.prod.yml down                        │
+│  □ docker tag vokabelnetz/backend:previous vokabelnetz/backend:latest    │
+│  □ docker-compose -f docker-compose.prod.yml up -d                       │
+│  □ Restore database from backup if needed                                │
+│                                                                          │
+└──────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---

@@ -23,38 +23,38 @@ This document describes the security architecture, policies, and best practices 
 ### JWT Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                         AUTHENTICATION FLOW                                  │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                              │
-│  ┌──────────┐      ┌──────────────┐      ┌──────────────┐                   │
-│  │  Client  │      │   Backend    │      │  Database    │                   │
-│  └────┬─────┘      └──────┬───────┘      └──────┬───────┘                   │
-│       │                   │                     │                           │
-│       │ 1. POST /login    │                     │                           │
-│       │   (email, pass)   │                     │                           │
-│       │──────────────────>│                     │                           │
-│       │                   │ 2. Verify password  │                           │
-│       │                   │────────────────────>│                           │
-│       │                   │<────────────────────│                           │
-│       │                   │                     │                           │
-│       │                   │ 3. Generate tokens  │                           │
-│       │                   │   - Access (15min)  │                           │
-│       │                   │   - Refresh (7day)  │                           │
-│       │                   │                     │                           │
-│       │                   │ 4. Store refresh    │                           │
-│       │                   │    token in DB      │                           │
-│       │                   │────────────────────>│                           │
-│       │                   │                     │                           │
-│       │ 5. Response:      │                     │                           │
-│       │   Access token    │                     │                           │
-│       │   (in JSON body)  │                     │                           │
-│       │   +               │                     │                           │
-│       │   Refresh token   │                     │                           │
-│       │   (HttpOnly cookie)                     │                           │
-│       │<──────────────────│                     │                           │
-│       │                   │                     │                           │
-└─────────────────────────────────────────────────────────────────────────────┘
+┌────────────────────────────────────────────────────────────┐
+│                     AUTHENTICATION FLOW                    │
+├────────────────────────────────────────────────────────────┤
+│                                                            │
+│  ┌──────────┐      ┌──────────────┐      ┌──────────────┐  │
+│  │  Client  │      │   Backend    │      │  Database    │  │
+│  └────┬─────┘      └──────┬───────┘      └──────┬───────┘  │
+│       │                   │                     │          │
+│       │ 1. POST /login    │                     │          │
+│       │   (email, pass)   │                     │          │
+│       │──────────────────>│                     │          │
+│       │                   │ 2. Verify password  │          │
+│       │                   │────────────────────>│          │
+│       │                   │<────────────────────│          │
+│       │                   │                     │          │
+│       │                   │ 3. Generate tokens  │          │
+│       │                   │   - Access (15min)  │          │
+│       │                   │   - Refresh (7day)  │          │
+│       │                   │                     │          │
+│       │                   │ 4. Store refresh    │          │
+│       │                   │    token in DB      │          │
+│       │                   │────────────────────>│          │
+│       │                   │                     │          │
+│       │ 5. Response:      │                     │          │
+│       │   Access token    │                     │          │
+│       │   (in JSON body)  │                     │          │
+│       │   +               │                     │          │
+│       │   Refresh token   │                     │          │
+│       │   (HttpOnly cookie)                     │          │
+│       │<──────────────────│                     │          │
+│       │                   │                     │          │
+└────────────────────────────────────────────────────────────┘
 ```
 
 ### Token Specifications
@@ -112,29 +112,29 @@ ResponseCookie refreshCookie = ResponseCookie.from("refresh_token", token)
 > **CRITICAL:** Every refresh request MUST rotate the token to limit exposure window.
 
 ```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                      REFRESH TOKEN ROTATION                                  │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                              │
-│  1. Client sends refresh request with cookie                                 │
-│                                                                              │
-│  2. Server validates:                                                        │
-│     □ Token exists in DB                                                     │
-│     □ Token is not revoked (is_revoked = FALSE)                             │
-│     □ Token is not expired (expires_at > NOW)                               │
-│     □ Token family is valid (no reuse detection)                            │
-│                                                                              │
-│  3. Server actions:                                                          │
-│     □ Mark OLD token as revoked (is_revoked = TRUE)                         │
-│     □ Generate NEW refresh token                                             │
-│     □ Store NEW token in DB                                                  │
-│     □ Generate NEW access token                                              │
-│                                                                              │
-│  4. Response:                                                                │
-│     □ New access token in body                                               │
-│     □ New refresh token in HttpOnly cookie                                   │
-│                                                                              │
-└─────────────────────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────┐
+│                REFRESH TOKEN ROTATION                │
+├──────────────────────────────────────────────────────┤
+│                                                      │
+│  1. Client sends refresh request with cookie         │
+│                                                      │
+│  2. Server validates:                                │
+│     □ Token exists in DB                             │
+│     □ Token is not revoked (is_revoked = FALSE)      │
+│     □ Token is not expired (expires_at > NOW)        │
+│     □ Token family is valid (no reuse detection)     │
+│                                                      │
+│  3. Server actions:                                  │
+│     □ Mark OLD token as revoked (is_revoked = TRUE)  │
+│     □ Generate NEW refresh token                     │
+│     □ Store NEW token in DB                          │
+│     □ Generate NEW access token                      │
+│                                                      │
+│  4. Response:                                        │
+│     □ New access token in body                       │
+│     □ New refresh token in HttpOnly cookie           │
+│                                                      │
+└──────────────────────────────────────────────────────┘
 ```
 
 ### Implementation
@@ -684,26 +684,26 @@ public class SecurityConfig {
 ### Rate Limiting Strategy
 
 ```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                         RATE LIMITING LAYERS                                 │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                              │
-│  Layer 1: Nginx (IP-based)                                                   │
-│  ├── Auth endpoints: 5 req/min per IP                                        │
-│  ├── API endpoints: 60 req/min per IP                                        │
-│  └── Learning endpoints: 100 req/min per IP                                  │
-│                                                                              │
-│  Layer 2: Application (User-based)                                           │
-│  ├── Login attempts: 5 failures → 15 min lockout                            │
-│  ├── Password reset: 3 req/hour per email                                    │
-│  └── API calls: Based on user tier                                          │
-│                                                                              │
-│  Layer 3: Account Protection                                                 │
-│  ├── Failed logins logged with IP                                           │
-│  ├── Suspicious activity alerts                                              │
-│  └── Automatic account lockout after N failures                             │
-│                                                                              │
-└─────────────────────────────────────────────────────────────────────────────┘
+┌────────────────────────────────────────────────────┐
+│                 RATE LIMITING LAYERS               │
+├────────────────────────────────────────────────────┤
+│                                                    │
+│  Layer 1: Nginx (IP-based)                         │
+│  ├── Auth endpoints: 5 req/min per IP              │
+│  ├── API endpoints: 60 req/min per IP              │
+│  └── Learning endpoints: 100 req/min per IP        │
+│                                                    │
+│  Layer 2: Application (User-based)                 │
+│  ├── Login attempts: 5 failures → 15 min lockout   │
+│  ├── Password reset: 3 req/hour per email          │
+│  └── API calls: Based on user tier                 │
+│                                                    │
+│  Layer 3: Account Protection                       │
+│  ├── Failed logins logged with IP                  │
+│  ├── Suspicious activity alerts                    │
+│  └── Automatic account lockout after N failures    │
+│                                                    │
+└────────────────────────────────────────────────────┘
 ```
 
 ### Login Brute Force Protection
