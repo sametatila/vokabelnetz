@@ -1,0 +1,36 @@
+# Production Profile Configuration
+
+spring:
+  jpa:
+    show-sql: false
+    hibernate:
+      ddl-auto: validate
+
+  # Disable DevTools in production
+  devtools:
+    restart:
+      enabled: false
+    livereload:
+      enabled: false
+
+# Logging
+logging:
+  level:
+    root: WARN
+    com.vokabelnetz: INFO
+    org.springframework.security: WARN
+
+# Swagger disabled in production
+springdoc:
+  swagger-ui:
+    enabled: false
+
+# Actuator - restricted in production
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: never
