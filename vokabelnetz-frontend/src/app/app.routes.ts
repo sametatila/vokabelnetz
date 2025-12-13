@@ -47,7 +47,7 @@ export const routes: Routes = [
       },
       {
         path: 'learn',
-        loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent) // Placeholder
+        loadComponent: () => import('./features/learning/learning.component').then(m => m.LearningComponent)
       },
       {
         path: 'vocabulary',
