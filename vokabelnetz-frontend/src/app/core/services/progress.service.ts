@@ -196,4 +196,15 @@ export class ProgressService {
   getAccuracyChart(): Observable<ApiResponse<any>> {
     return this.http.get<ApiResponse<any>>(`${this.apiUrl}/progress/charts/accuracy`);
   }
+
+  /**
+   * Activate a streak freeze for today.
+   * Uses one of the available freezes to protect the streak.
+   */
+  activateFreeze(): Observable<ApiResponse<{ success: boolean; freezesRemaining: number }>> {
+    return this.http.post<ApiResponse<{ success: boolean; freezesRemaining: number }>>(
+      `${this.apiUrl}/progress/streak/freeze`,
+      {}
+    );
+  }
 }

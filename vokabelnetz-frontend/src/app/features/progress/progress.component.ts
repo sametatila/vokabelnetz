@@ -104,13 +104,47 @@ import { CefrLevel } from '../../core/models';
                   <p class="text-sm text-gray-500">Longest</p>
                 </div>
               </div>
-              @if (streak()?.atRisk) {
+
+              <!-- Streak Freezes Available -->
+              @if (streak()?.freezesAvailable !== undefined) {
+                <div class="flex items-center gap-2 mb-4 p-3 bg-blue-50 rounded-lg">
+                  <svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2c-5.33 4.55-8 8.48-8 11.8 0 4.98 3.8 8.2 8 8.2s8-3.22 8-8.2c0-3.32-2.67-7.25-8-11.8zm0 18c-3.35 0-6-2.57-6-6.2 0-2.34 1.95-5.44 6-9.14 4.05 3.7 6 6.79 6 9.14 0 3.63-2.65 6.2-6 6.2z"/>
+                  </svg>
+                  <span class="text-sm text-blue-700">
+                    {{ streak()!.freezesAvailable }} streak freeze{{ streak()!.freezesAvailable !== 1 ? 's' : '' }} available
+                  </span>
+                </div>
+              }
+
+              <!-- Streak Status Messages -->
+              @if (streak()?.atRisk && !streak()?.todayCompleted) {
                 <div class="p-3 bg-red-50 border border-red-200 rounded-lg">
-                  <p class="text-sm text-red-700">Your streak is at risk! Practice today to keep it.</p>
+                  <p class="text-sm text-red-700">
+                    <span class="font-medium">Streak at risk!</span> Practice today to keep your {{ progress()!.streak.currentStreak }}-day streak.
+                  </p>
                 </div>
               } @else if (streak()?.todayCompleted) {
                 <div class="p-3 bg-green-50 border border-green-200 rounded-lg">
-                  <p class="text-sm text-green-700">Today's goal completed!</p>
+                  <p class="text-sm text-green-700">
+                    <span class="font-medium">Great job!</span> Today's goal completed. Keep it up!
+                  </p>
+                </div>
+              } @else if (progress()!.streak.currentStreak === 0) {
+                <div class="p-3 bg-gray-50 border border-gray-200 rounded-lg">
+                  <p class="text-sm text-gray-700">
+                    Start learning today to begin a new streak!
+                  </p>
+                </div>
+              }
+
+              <!-- Next Milestone -->
+              @if (streak()?.milestones) {
+                <div class="mt-4 pt-4 border-t border-gray-100">
+                  <div class="flex justify-between text-sm">
+                    <span class="text-gray-500">Next milestone</span>
+                    <span class="font-medium text-gray-700">{{ streak()!.milestones.nextMilestone }} days ({{ streak()!.milestones.daysUntilNext }} to go)</span>
+                  </div>
                 </div>
               }
             </div>
