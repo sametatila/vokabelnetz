@@ -2,6 +2,7 @@ import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { LearningService } from '../../core/services/learning.service';
+import { AudioService } from '../../core/services/audio.service';
 import { LearningStore } from '../../core/state/learning.store';
 import { FlashcardComponent } from '../../shared/components/flashcard/flashcard.component';
 import { SessionType, CefrLevel } from '../../core/models';
@@ -262,6 +263,7 @@ import { SessionType, CefrLevel } from '../../core/models';
 })
 export class LearningComponent implements OnInit, OnDestroy {
   private readonly learningService = inject(LearningService);
+  private readonly audioService = inject(AudioService);
   private readonly router = inject(Router);
   protected readonly learningStore = inject(LearningStore);
 
@@ -336,8 +338,9 @@ export class LearningComponent implements OnInit, OnDestroy {
   }
 
   onPlayAudio(word: string): void {
-    // TODO: Implement audio playback with AudioService
-    console.log('Play audio for:', word);
+    const currentWord = this.learningStore.word();
+    const level = currentWord?.cefrLevel || 'A1';
+    this.audioService.playWord(word, level);
   }
 
   submitAnswer(correct: boolean, quality: number): void {
