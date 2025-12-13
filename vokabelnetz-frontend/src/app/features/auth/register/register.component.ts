@@ -4,6 +4,8 @@ import { RouterLink } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../../core/services/auth.service';
 import { AuthStore } from '../../../core/state/auth.store';
+import { TimezoneService } from '../../../core/services/timezone.service';
+import { LanguageService } from '../../../core/services/language.service';
 
 @Component({
   selector: 'app-register',
@@ -141,6 +143,8 @@ import { AuthStore } from '../../../core/state/auth.store';
 export class RegisterComponent {
   private readonly fb = inject(FormBuilder);
   private readonly authService = inject(AuthService);
+  private readonly timezoneService = inject(TimezoneService);
+  private readonly languageService = inject(LanguageService);
   protected readonly authStore = inject(AuthStore);
 
   errorMessage = '';
@@ -169,7 +173,15 @@ export class RegisterComponent {
 
     this.errorMessage = '';
 
-    this.authService.register(this.registerForm.value).subscribe({
+    // Add detected timezone and language settings
+    const registerData = {
+      ...this.registerForm.value,
+      timezone: this.timezoneService.detectTimezone(),
+      uiLanguage: this.languageService.currentUiLanguage(),
+      sourceLanguage: this.languageService.currentSourceLanguage()
+    };
+
+    this.authService.register(registerData).subscribe({
       error: (error) => {
         this.errorMessage = error?.error?.error?.message || 'Registration failed. Please try again.';
       }
