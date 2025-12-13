@@ -55,7 +55,7 @@ export const routes: Routes = [
       },
       {
         path: 'progress',
-        loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent) // Placeholder
+        loadComponent: () => import('./features/progress/progress.component').then(m => m.ProgressComponent)
       },
       {
         path: 'settings',
