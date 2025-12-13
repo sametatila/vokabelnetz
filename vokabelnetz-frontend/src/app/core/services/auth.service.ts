@@ -1,19 +1,9 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable, tap, catchError, throwError } from 'rxjs';
-import { environment } from '../../../environments/environment';
+import { Observable, tap, catchError, throwError, finalize } from 'rxjs';
 import { AuthStore } from './auth.store';
-import {
-  ApiResponse,
-  AuthResponse,
-  LoginRequest,
-  RegisterRequest,
-  ForgotPasswordRequest,
-  ResetPasswordRequest,
-  ChangePasswordRequest,
-  Session
-} from '../models';
+import { LoginRequest, RegisterRequest, AuthResponse, ApiResponse } from '../models';
 
 @Injectable({
   providedIn: 'root'
@@ -23,142 +13,91 @@ export class AuthService {
   private readonly router = inject(Router);
   private readonly authStore = inject(AuthStore);
 
-  private readonly apiUrl = `${environment.apiUrl}/auth`;
+  private readonly apiUrl = 'http://localhost:8080/api';
 
   /**
-   * Register a new user.
+   * Login user with email and password.
    */
-  register(request: RegisterRequest): Observable<ApiResponse<AuthResponse>> {
+  login(credentials: LoginRequest): Observable<AuthResponse> {
     this.authStore.setLoading(true);
-    return this.http.post<ApiResponse<AuthResponse>>(`${this.apiUrl}/register`, request).pipe(
+
+    return this.http.post<AuthResponse>(`${this.apiUrl}/auth/login`, credentials).pipe(
       tap(response => {
         if (response.success && response.data) {
-          this.handleAuthSuccess(response.data);
+          this.authStore.setAuth(
+            response.data.accessToken,
+            response.data.refreshToken,
+            response.data.user
+          );
+          this.router.navigate(['/dashboard']);
         }
       }),
-      catchError(this.handleError.bind(this))
+      catchError(error => {
+        return throwError(() => error);
+      }),
+      finalize(() => this.authStore.setLoading(false))
     );
   }
 
   /**
-   * Login with email and password.
+   * Register new user.
    */
-  login(request: LoginRequest): Observable<ApiResponse<AuthResponse>> {
+  register(userData: RegisterRequest): Observable<AuthResponse> {
     this.authStore.setLoading(true);
-    return this.http.post<ApiResponse<AuthResponse>>(`${this.apiUrl}/login`, request).pipe(
+
+    return this.http.post<AuthResponse>(`${this.apiUrl}/auth/register`, userData).pipe(
       tap(response => {
         if (response.success && response.data) {
-          this.handleAuthSuccess(response.data);
+          this.authStore.setAuth(
+            response.data.accessToken,
+            response.data.refreshToken,
+            response.data.user
+          );
+          this.router.navigate(['/auth/verify-email']);
         }
       }),
-      catchError(this.handleError.bind(this))
+      catchError(error => {
+        return throwError(() => error);
+      }),
+      finalize(() => this.authStore.setLoading(false))
     );
   }
 
   /**
-   * Refresh access token using refresh token.
+   * Logout user.
    */
-  refreshTokens(): Observable<ApiResponse<AuthResponse>> {
+  logout(): void {
     const refreshToken = this.authStore.refreshToken();
-    if (!refreshToken) {
-      return throwError(() => new Error('No refresh token available'));
-    }
 
-    return this.http.post<ApiResponse<AuthResponse>>(`${this.apiUrl}/refresh`, { refreshToken }).pipe(
+    if (refreshToken) {
+      this.http.post(`${this.apiUrl}/auth/logout`, { refreshToken }).subscribe({
+        complete: () => this.clearAndRedirect()
+      });
+    } else {
+      this.clearAndRedirect();
+    }
+  }
+
+  /**
+   * Refresh access token.
+   */
+  refreshToken(): Observable<ApiResponse<{ accessToken: string; refreshToken: string }>> {
+    const refreshToken = this.authStore.refreshToken();
+
+    return this.http.post<ApiResponse<{ accessToken: string; refreshToken: string }>>(
+      `${this.apiUrl}/auth/refresh`,
+      { refreshToken }
+    ).pipe(
       tap(response => {
         if (response.success && response.data) {
           this.authStore.updateTokens(response.data.accessToken, response.data.refreshToken);
         }
-      }),
-      catchError(error => {
-        // If refresh fails, logout user
-        this.logout();
-        return throwError(() => error);
       })
     );
   }
 
-  /**
-   * Logout current session.
-   */
-  logout(): void {
-    const refreshToken = this.authStore.refreshToken();
-    if (refreshToken) {
-      this.http.post(`${this.apiUrl}/logout`, { refreshToken }).subscribe();
-    }
+  private clearAndRedirect(): void {
     this.authStore.clearAuth();
     this.router.navigate(['/auth/login']);
-  }
-
-  /**
-   * Logout from all devices.
-   */
-  logoutAll(): Observable<ApiResponse<{ message: string }>> {
-    return this.http.post<ApiResponse<{ message: string }>>(`${this.apiUrl}/logout-all`, {}).pipe(
-      tap(() => {
-        this.authStore.clearAuth();
-        this.router.navigate(['/auth/login']);
-      })
-    );
-  }
-
-  /**
-   * Request password reset.
-   */
-  forgotPassword(request: ForgotPasswordRequest): Observable<ApiResponse<{ message: string }>> {
-    return this.http.post<ApiResponse<{ message: string }>>(`${this.apiUrl}/forgot-password`, request);
-  }
-
-  /**
-   * Reset password with token.
-   */
-  resetPassword(request: ResetPasswordRequest): Observable<ApiResponse<{ message: string }>> {
-    return this.http.post<ApiResponse<{ message: string }>>(`${this.apiUrl}/reset-password`, request);
-  }
-
-  /**
-   * Verify email with token.
-   */
-  verifyEmail(token: string): Observable<ApiResponse<{ message: string }>> {
-    return this.http.get<ApiResponse<{ message: string }>>(`${this.apiUrl}/verify-email`, {
-      params: { token }
-    });
-  }
-
-  /**
-   * Resend verification email.
-   */
-  resendVerification(): Observable<ApiResponse<{ message: string }>> {
-    return this.http.post<ApiResponse<{ message: string }>>(`${this.apiUrl}/resend-verification`, {});
-  }
-
-  /**
-   * Get active sessions.
-   */
-  getSessions(): Observable<ApiResponse<{ sessions: Session[]; totalSessions: number }>> {
-    return this.http.get<ApiResponse<{ sessions: Session[]; totalSessions: number }>>(`${this.apiUrl}/sessions`);
-  }
-
-  /**
-   * Revoke a specific session.
-   */
-  revokeSession(sessionId: number): Observable<ApiResponse<{ message: string }>> {
-    return this.http.delete<ApiResponse<{ message: string }>>(`${this.apiUrl}/sessions/${sessionId}`);
-  }
-
-  /**
-   * Handle successful authentication.
-   */
-  private handleAuthSuccess(data: AuthResponse): void {
-    this.authStore.setAuth(data.accessToken, data.refreshToken, data.user);
-    this.authStore.setLoading(false);
-  }
-
-  /**
-   * Handle authentication errors.
-   */
-  private handleError(error: unknown): Observable<never> {
-    this.authStore.setLoading(false);
-    return throwError(() => error);
   }
 }

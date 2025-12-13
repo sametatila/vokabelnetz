@@ -1,4 +1,7 @@
-@import "tailwindcss";
+@use "tailwindcss";
+
+/* Source paths for Tailwind to scan */
+@source "./app/**/*.{html,ts}";
 
 /* Custom theme configuration */
 @theme {

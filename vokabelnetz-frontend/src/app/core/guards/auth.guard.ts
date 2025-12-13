@@ -2,9 +2,6 @@ import { inject } from '@angular/core';
 import { Router, CanActivateFn } from '@angular/router';
 import { AuthStore } from '../services/auth.store';
 
-/**
- * Guard that prevents unauthenticated users from accessing protected routes.
- */
 export const authGuard: CanActivateFn = () => {
   const authStore = inject(AuthStore);
   const router = inject(Router);
@@ -13,17 +10,11 @@ export const authGuard: CanActivateFn = () => {
     return true;
   }
 
-  // Redirect to login page
-  router.navigate(['/auth/login'], {
-    queryParams: { returnUrl: router.url }
-  });
+  router.navigate(['/auth/login']);
   return false;
 };
 
-/**
- * Guard that prevents authenticated users from accessing auth pages (login, register).
- */
-export const noAuthGuard: CanActivateFn = () => {
+export const guestGuard: CanActivateFn = () => {
   const authStore = inject(AuthStore);
   const router = inject(Router);
 
@@ -31,7 +22,6 @@ export const noAuthGuard: CanActivateFn = () => {
     return true;
   }
 
-  // Redirect to dashboard
   router.navigate(['/dashboard']);
   return false;
 };

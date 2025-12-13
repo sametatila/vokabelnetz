@@ -1,21 +1,30 @@
 import { Routes } from '@angular/router';
-import { authGuard, noAuthGuard } from './core/guards';
+import { authGuard, guestGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: 'dashboard',
+    redirectTo: 'auth/login',
     pathMatch: 'full'
   },
   {
     path: 'auth',
-    canActivate: [noAuthGuard],
-    loadChildren: () => import('./features/auth/auth.routes').then(m => m.AUTH_ROUTES)
+    canActivate: [guestGuard],
+    children: [
+      {
+        path: 'login',
+        loadComponent: () => import('./features/auth/login/login.component').then(m => m.LoginComponent)
+      },
+      {
+        path: 'register',
+        loadComponent: () => import('./features/auth/register/register.component').then(m => m.RegisterComponent)
+      }
+    ]
   },
   {
     path: '',
     canActivate: [authGuard],
-    loadComponent: () => import('./layout/main-layout/main-layout.component').then(m => m.MainLayoutComponent),
+    loadComponent: () => import('./shared/layouts/main-layout/main-layout.component').then(m => m.MainLayoutComponent),
     children: [
       {
         path: 'dashboard',
@@ -23,20 +32,24 @@ export const routes: Routes = [
       },
       {
         path: 'learn',
-        loadChildren: () => import('./features/learn/learn.routes').then(m => m.LEARN_ROUTES)
+        loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent) // Placeholder
+      },
+      {
+        path: 'vocabulary',
+        loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent) // Placeholder
       },
       {
         path: 'progress',
-        loadChildren: () => import('./features/progress/progress.routes').then(m => m.PROGRESS_ROUTES)
+        loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent) // Placeholder
       },
       {
         path: 'settings',
-        loadChildren: () => import('./features/settings/settings.routes').then(m => m.SETTINGS_ROUTES)
+        loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent) // Placeholder
       }
     ]
   },
   {
     path: '**',
-    redirectTo: 'dashboard'
+    redirectTo: 'auth/login'
   }
 ];

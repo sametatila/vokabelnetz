@@ -23,7 +23,7 @@ This document describes the system architecture, design patterns, and technical 
 │                                                                                  │
 │  ┌────────────────────────────────────────────────────────────────────────────┐  │
 │  │                           PRESENTATION LAYER                               │  │
-│  │                         (Angular 21 Frontend)                              │  │
+│  │                    (Angular 19 Frontend + Tailwind CSS v4)                 │  │
 │  │  ┌──────────┐ ┌───────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐         │  │
 │  │  │   Auth   │ │ Dashboard │ │ Learning │ │ Progress │ │ Settings │         │  │
 │  │  │  Module  │ │  Module   │ │  Module  │ │  Module  │ │  Module  │         │  │
@@ -884,14 +884,15 @@ vokabelnetz/
 | Spring Security 7 | Modern security defaults |
 | Jakarta EE | Full Jakarta namespace migration |
 
-### Why Angular 21?
+### Why Angular 19 + Tailwind CSS v4?
 
 | Consideration | Decision |
 |--------------|----------|
-| Signals | Native reactive primitives |
+| Angular 19 | Stable version with full Tailwind CSS v4 compatibility |
+| Tailwind v4 | Modern CSS-first configuration with @theme directive |
+| Signals | Native reactive primitives for state management |
 | Standalone Components | Simplified module structure |
 | Control Flow | `@if`, `@for` syntax |
-| SSR Ready | Server-side rendering support |
 
 ### Why PostgreSQL 18?
 
