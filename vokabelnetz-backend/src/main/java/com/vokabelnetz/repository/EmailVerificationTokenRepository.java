@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Repository
@@ -57,5 +58,5 @@ public interface EmailVerificationTokenRepository extends JpaRepository<EmailVer
         WHERE evt.user.id = :userId
         AND evt.createdAt > :after
         """)
-    long countByUserIdAndCreatedAtAfter(@Param("userId") Long userId, @Param("after") Instant after);
+    long countByUserIdAndCreatedAtAfter(@Param("userId") Long userId, @Param("after") LocalDateTime after);
 }

@@ -18,6 +18,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.HexFormat;
 
 /**
@@ -49,7 +50,7 @@ public class EmailVerificationService {
         // Rate limit: Max tokens per day per user
         long recentTokens = tokenRepository.countByUserIdAndCreatedAtAfter(
             user.getId(),
-            Instant.now().minus(Duration.ofDays(1))
+            LocalDateTime.now().minusDays(1)
         );
 
         if (recentTokens >= MAX_TOKENS_PER_DAY) {
