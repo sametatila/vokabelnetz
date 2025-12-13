@@ -1,5 +1,6 @@
 package com.vokabelnetz.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.vokabelnetz.entity.enums.Role;
 import com.vokabelnetz.entity.enums.SourceLanguage;
 import com.vokabelnetz.entity.enums.UiLanguage;
@@ -28,6 +29,7 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private String email;
 
+    @JsonIgnore
     @Column(name = "password_hash", nullable = false)
     private String passwordHash;
 
@@ -125,19 +127,23 @@ public class User extends BaseEntity {
     @Column(name = "last_active_at")
     private LocalDateTime lastActiveAt;
 
-    // Relationships
+    // Relationships - excluded from JSON to prevent lazy loading issues
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<UserWordProgress> wordProgress = new ArrayList<>();
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<LearningSession> learningSessions = new ArrayList<>();
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<RefreshToken> refreshTokens = new ArrayList<>();
 
+    @JsonIgnore
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private UserPreferences preferences;
 }

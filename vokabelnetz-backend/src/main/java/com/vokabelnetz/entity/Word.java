@@ -1,5 +1,6 @@
 package com.vokabelnetz.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.vokabelnetz.entity.enums.CefrLevel;
 import com.vokabelnetz.entity.enums.WordCategory;
 import com.vokabelnetz.entity.enums.WordType;
@@ -92,7 +93,8 @@ public class Word extends BaseEntity {
     @Column(columnDefinition = "jsonb")
     private String tags;
 
-    // Relationships
+    // Relationships - excluded from JSON to prevent lazy loading issues
+    @JsonIgnore
     @OneToMany(mappedBy = "word", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<UserWordProgress> userProgress = new ArrayList<>();
