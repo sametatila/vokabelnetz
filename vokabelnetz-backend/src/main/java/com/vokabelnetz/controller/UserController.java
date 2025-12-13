@@ -12,6 +12,7 @@ import com.vokabelnetz.entity.enums.UiLanguage;
 import com.vokabelnetz.exception.BadRequestException;
 import com.vokabelnetz.security.CurrentUser;
 import com.vokabelnetz.service.AuthService;
+import com.vokabelnetz.service.PasswordHistoryService;
 import com.vokabelnetz.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +37,7 @@ public class UserController {
     private final UserService userService;
     private final AuthService authService;
     private final PasswordEncoder passwordEncoder;
+    private final PasswordHistoryService passwordHistoryService;
 
     /**
      * Get current user profile.
@@ -85,8 +87,17 @@ public class UserController {
             throw new BadRequestException("Current password is incorrect");
         }
 
+        // Check password history (prevent reuse of last N passwords)
+        if (passwordHistoryService.isPasswordUsedBefore(user, request.getNewPassword())) {
+            throw new BadRequestException("Cannot reuse a recent password. Please choose a different password.");
+        }
+
+        // Save current password to history before changing
+        passwordHistoryService.savePasswordHash(user, user.getPasswordHash());
+
         // Update password
-        user.setPasswordHash(passwordEncoder.encode(request.getNewPassword()));
+        String newPasswordHash = passwordEncoder.encode(request.getNewPassword());
+        user.setPasswordHash(newPasswordHash);
         user.setPasswordChangedAt(LocalDateTime.now());
         userService.save(user);
 
