@@ -93,6 +93,11 @@ app:
     from-address: ${APP_MAIL_FROM:noreply@vokabelnetz.com}
     from-name: Vokabelnetz
     frontend-url: ${APP_FRONTEND_URL:http://localhost:4200}
+  security:
+    alerts:
+      enabled: ${APP_SECURITY_ALERTS_ENABLED:true}
+      email: ${APP_SECURITY_ALERTS_EMAIL:}
+      slack-webhook: ${APP_SECURITY_ALERTS_SLACK_WEBHOOK:}
 
 # Spring Mail Configuration
 spring.mail:

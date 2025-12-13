@@ -47,6 +47,7 @@ public class AuthService {
     private final LoginAttemptService loginAttemptService;
     private final EmailService emailService;
     private final EmailVerificationService emailVerificationService;
+    private final SecurityAlertService securityAlertService;
 
     private static final SecureRandom secureRandom = new SecureRandom();
 
@@ -161,6 +162,13 @@ public class AuthService {
         if (Boolean.TRUE.equals(storedToken.getIsRevoked())) {
             log.warn("SECURITY: Refresh token reuse detected for user {}",
                 storedToken.getUser().getId());
+
+            // Send security alert
+            securityAlertService.sendTokenReuseAlert(
+                storedToken.getUser(),
+                storedToken.getIpAddress(),
+                storedToken.getUserAgent()
+            );
 
             // Revoke ALL tokens for this user
             refreshTokenRepository.revokeAllByUserId(

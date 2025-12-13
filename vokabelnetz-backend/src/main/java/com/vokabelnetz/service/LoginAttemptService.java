@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 /**
  * Login attempt tracking service for brute force protection.
@@ -20,9 +20,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class LoginAttemptService {
 
     private final AppProperties appProperties;
+    private final SecurityAlertService securityAlertService;
 
     // In-memory cache (use Redis in production for distributed deployments)
     private final Map<String, AttemptInfo> attemptsCache = new ConcurrentHashMap<>();
+
+    // Threshold for distributed attack detection (unique IPs per email)
+    private static final int DISTRIBUTED_ATTACK_THRESHOLD = 5;
 
     /**
      * Record a failed login attempt.
@@ -38,9 +42,17 @@ public class LoginAttemptService {
             return new AttemptInfo(existing.attempts + 1, Instant.now());
         });
 
-        if (info.attempts >= config.getMaxLoginAttempts()) {
+        // Check for account lockout
+        if (info.attempts == config.getMaxLoginAttempts()) {
             log.warn("SECURITY: Account locked due to {} failed attempts. Key: {}",
                 info.attempts, key);
+            securityAlertService.sendAccountLockoutAlert(email, ipAddress, info.attempts);
+        }
+
+        // Check for distributed attack (multiple IPs trying same email)
+        int uniqueIps = countUniqueIpsForEmail(email);
+        if (uniqueIps >= DISTRIBUTED_ATTACK_THRESHOLD) {
+            securityAlertService.sendDistributedAttackAlert(email, uniqueIps);
         }
     }
 
@@ -76,6 +88,19 @@ public class LoginAttemptService {
 
     private String createKey(String email, String ipAddress) {
         return email.toLowerCase() + ":" + ipAddress;
+    }
+
+    /**
+     * Count unique IPs that have attempted to login with the same email.
+     * Used for distributed attack detection.
+     */
+    private int countUniqueIpsForEmail(String email) {
+        String emailPrefix = email.toLowerCase() + ":";
+        return (int) attemptsCache.keySet().stream()
+            .filter(key -> key.startsWith(emailPrefix))
+            .map(key -> key.substring(emailPrefix.length()))
+            .distinct()
+            .count();
     }
 
     private record AttemptInfo(int attempts, Instant lastAttempt) {}

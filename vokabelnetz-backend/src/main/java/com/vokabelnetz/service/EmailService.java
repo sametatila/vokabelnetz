@@ -100,6 +100,16 @@ public class EmailService {
     }
 
     /**
+     * Send security alert email to admin.
+     */
+    @Async
+    public void sendSecurityAlertEmail(String adminEmail, String subject, String htmlBody) {
+        String fullBody = buildSecurityAlertEmailWrapper(htmlBody);
+        sendEmail(adminEmail, subject, fullBody);
+        log.info("Security alert email sent to admin");
+    }
+
+    /**
      * Send streak reminder email.
      */
     @Async
@@ -443,6 +453,38 @@ public class EmailService {
             </body>
             </html>
             """.formatted(name, verifyUrl, verifyUrl);
+    }
+
+    private String buildSecurityAlertEmailWrapper(String content) {
+        return """
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <style>
+                    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+                    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+                    .alert-box { background-color: #fff3cd; border: 2px solid #ff6b6b; padding: 20px; border-radius: 8px; margin: 20px 0; }
+                    .footer { margin-top: 30px; font-size: 12px; color: #666; border-top: 1px solid #ddd; padding-top: 20px; }
+                    h2 { color: #d63031; }
+                    h3 { color: #2d3436; }
+                    ul { padding-left: 20px; }
+                    li { margin-bottom: 8px; }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="alert-box">
+                        %s
+                    </div>
+                    <div class="footer">
+                        <p>This is an automated security alert from Vokabelnetz.</p>
+                        <p>Please investigate this event promptly.</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+            """.formatted(content);
     }
 
     /**
