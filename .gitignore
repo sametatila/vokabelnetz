@@ -33,7 +33,6 @@ replay_pid*
 # =========================
 # Spring Boot
 # =========================
-*.log
 logs/
 spring-boot-devtools.properties
 application-local.properties
