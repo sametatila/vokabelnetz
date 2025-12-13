@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../../core/services/auth.service';
-import { AuthStore } from '../../../core/services/auth.store';
+import { AuthStore } from '../../../core/state/auth.store';
 
 @Component({
   selector: 'app-forgot-password',

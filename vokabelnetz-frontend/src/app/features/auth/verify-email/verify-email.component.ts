@@ -2,7 +2,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
-import { AuthStore } from '../../../core/services/auth.store';
+import { AuthStore } from '../../../core/state/auth.store';
 
 @Component({
   selector: 'app-verify-email',

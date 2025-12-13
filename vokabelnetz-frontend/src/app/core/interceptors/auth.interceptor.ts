@@ -1,7 +1,7 @@
 import { HttpInterceptorFn, HttpRequest, HttpHandlerFn, HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { catchError, switchMap, throwError } from 'rxjs';
-import { AuthStore } from '../services/auth.store';
+import { AuthStore } from '../state/auth.store';
 import { AuthService } from '../services/auth.service';
 
 export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>, next: HttpHandlerFn) => {
@@ -10,10 +10,13 @@ export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>, ne
 
   const accessToken = authStore.accessToken();
 
-  // Skip auth for login/register/refresh endpoints
+  // Skip auth for public auth endpoints
   if (req.url.includes('/auth/login') ||
       req.url.includes('/auth/register') ||
-      req.url.includes('/auth/refresh')) {
+      req.url.includes('/auth/refresh') ||
+      req.url.includes('/auth/forgot-password') ||
+      req.url.includes('/auth/reset-password') ||
+      req.url.includes('/auth/verify-email')) {
     return next(req);
   }
 
@@ -28,7 +31,8 @@ export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>, ne
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
-      if (error.status === 401 && authStore.refreshToken()) {
+      // Try to refresh token on 401 error
+      if (error.status === 401 && authStore.isAuthenticated()) {
         return authService.refreshToken().pipe(
           switchMap(() => {
             const newToken = authStore.accessToken();

@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, tap, catchError, throwError, finalize } from 'rxjs';
-import { AuthStore } from './auth.store';
+import { AuthStore } from '../state/auth.store';
 import { LoginRequest, RegisterRequest, ForgotPasswordRequest, ResetPasswordRequest, AuthResponse, ApiResponse } from '../models';
 
 @Injectable({
@@ -65,34 +65,46 @@ export class AuthService {
 
   /**
    * Logout user.
+   * Calls server to invalidate refresh token (HttpOnly cookie).
    */
   logout(): void {
-    const refreshToken = this.authStore.refreshToken();
-
-    if (refreshToken) {
-      this.http.post(`${this.apiUrl}/auth/logout`, { refreshToken }).subscribe({
-        complete: () => this.clearAndRedirect()
-      });
-    } else {
-      this.clearAndRedirect();
-    }
+    this.http.post(`${this.apiUrl}/auth/logout`, {}, { withCredentials: true }).subscribe({
+      complete: () => this.clearAndRedirect(),
+      error: () => this.clearAndRedirect()
+    });
   }
 
   /**
-   * Refresh access token.
+   * Refresh access token using HttpOnly cookie.
    */
   refreshToken(): Observable<ApiResponse<{ accessToken: string; refreshToken: string }>> {
-    const refreshToken = this.authStore.refreshToken();
-
     return this.http.post<ApiResponse<{ accessToken: string; refreshToken: string }>>(
       `${this.apiUrl}/auth/refresh`,
-      { refreshToken }
+      {},
+      { withCredentials: true }
     ).pipe(
       tap(response => {
         if (response.success && response.data) {
           this.authStore.updateTokens(response.data.accessToken, response.data.refreshToken);
         }
       })
+    );
+  }
+
+  /**
+   * Initialize auth state on app startup.
+   * Attempts to get new access token using refresh cookie.
+   */
+  initializeAuth(): Observable<ApiResponse<{ accessToken: string; refreshToken: string }>> {
+    this.authStore.setLoading(true);
+
+    return this.refreshToken().pipe(
+      tap(() => this.authStore.setInitialized(true)),
+      catchError(error => {
+        this.authStore.setInitialized(true);
+        return throwError(() => error);
+      }),
+      finalize(() => this.authStore.setLoading(false))
     );
   }
 
