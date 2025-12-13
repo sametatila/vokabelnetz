@@ -44,7 +44,7 @@ import { SessionType, CefrLevel } from '../../core/models';
 
             <!-- New Words Mode -->
             <button
-              (click)="startSession('NEW')"
+              (click)="startSession('LEARN')"
               [disabled]="learningStore.loading()"
               class="card hover:shadow-lg transition-shadow text-left"
             >

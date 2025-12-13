@@ -4,17 +4,23 @@ import { Observable } from 'rxjs';
 import { ApiResponse, UserProfile } from '../models';
 import { environment } from '../../../environments/environment';
 
-// User Preferences
+// User Preferences (per DATABASE.md user_preferences table)
 export interface UserPreferences {
+  // Language Settings
   uiLanguage: string;
   sourceLanguage: string;
+  targetLanguage: string;
   showBothTranslations: boolean;
   primaryTranslation: string;
+  // Learning Goals
   dailyWordGoal: number;
   sessionDurationMin: number;
   newWordsPerSession: number;
+  // Notifications
   notificationEnabled: boolean;
   notificationTime: string;
+  emailReminders: boolean;
+  // UI Preferences
   soundEnabled: boolean;
   darkMode: boolean;
   showPronunciation: boolean;
@@ -22,6 +28,7 @@ export interface UserPreferences {
   showExampleSentences: boolean;
   showWordType: boolean;
   showArticleHints: boolean;
+  compactCardView: boolean;
 }
 
 // Language Settings

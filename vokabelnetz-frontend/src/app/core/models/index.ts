@@ -92,8 +92,8 @@ export interface StreakStatus {
   freezesAvailable: number;
 }
 
-// Learning Types
-export type SessionType = 'REVIEW' | 'NEW' | 'MIXED';
+// Learning Types (per DATABASE.md session_type ENUM)
+export type SessionType = 'LEARN' | 'REVIEW' | 'QUIZ' | 'MIXED';
 export type CefrLevel = 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2';
 export type WordType = 'NOUN' | 'VERB' | 'ADJECTIVE' | 'ADVERB' | 'PREPOSITION' | 'CONJUNCTION' | 'PRONOUN' | 'ARTICLE' | 'OTHER';
 
@@ -113,25 +113,20 @@ export interface LearningSession {
   startedAt: string;
 }
 
-// Word Category
+// Word Category (per DATABASE.md word_category ENUM)
 export type WordCategory =
-  | 'ALLTAG'
-  | 'ARBEIT_BERUF'
-  | 'BILDUNG'
-  | 'ESSEN_TRINKEN'
-  | 'FAMILIE'
-  | 'FREIZEIT'
-  | 'GESUNDHEIT'
-  | 'KOMMUNIKATION'
-  | 'NATUR'
-  | 'REISEN'
-  | 'SPORT'
-  | 'TECHNIK'
-  | 'WOHNEN'
-  | 'ZAHLEN_ZEIT'
-  | 'SONSTIGES';
+  | 'ALLTAG'           // Daily life
+  | 'ARBEIT_BERUF'     // Work & career
+  | 'BILDUNG'          // Education
+  | 'ESSEN_TRINKEN'    // Food & drink
+  | 'FAMILIE_FREUNDE'  // Family & friends
+  | 'FREIZEIT'         // Leisure
+  | 'GESUNDHEIT'       // Health
+  | 'REISEN_VERKEHR'   // Travel & transport
+  | 'WOHNEN'           // Home & living
+  | 'ANDERE';          // Other
 
-// Word
+// Word (per DATABASE.md words table)
 export interface Word {
   id: number;
   german: string;
@@ -151,7 +146,11 @@ export interface Word {
   phoneticSpelling?: string;
   pluralForm?: string;
   category?: WordCategory;
+  tags?: string;
   difficultyRating: number;
+  // Global statistics
+  timesShown?: number;
+  timesCorrect?: number;
 }
 
 // Next Word Response
