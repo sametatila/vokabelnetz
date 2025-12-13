@@ -142,13 +142,32 @@ Vocabulary based on official **Goethe Institut** word lists:
 
 ## 🗺 Roadmap
 
-- [x] User authentication
-- [x] SM-2 + Elo algorithms
-- [ ] Core flashcard system
-- [ ] Progress tracking
-- [ ] Gamification features
-- [ ] Community features
-- [ ] Advanced statistics & insights
+### Phase 1: Backend (Complete)
+- [x] JWT Authentication with refresh token rotation
+- [x] SM-2 Spaced Repetition & Elo Rating algorithms
+- [x] Streak system with freeze protection
+- [x] Email verification & password reset
+- [x] Security alerts & brute force protection
+- [x] All REST API endpoints
+- [x] Scheduled jobs (data retention, streak processing)
+
+### Phase 2: Frontend (In Progress)
+- [ ] Angular 21 SPA with Tailwind CSS
+- [ ] Authentication pages (login, register, password reset)
+- [ ] Learning interface (flashcards, quiz modes)
+- [ ] Dashboard & progress visualizations
+- [ ] Settings & preferences
+
+### Phase 3: Content & Polish
+- [ ] Full A1-B1 vocabulary dataset (4,300+ words)
+- [ ] Audio pronunciations
+- [ ] PWA support
+- [ ] Performance optimizations
+
+### Future
+- [ ] Gamification (achievements, leaderboards)
+- [ ] Social features (friends, challenges)
+- [ ] Additional languages
 
 ---
 
