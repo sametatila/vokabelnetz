@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { VocabularyService, WordStats } from '../../core/services/vocabulary.service';
 import { LanguageService } from '../../core/services/language.service';
+import { AudioService } from '../../core/services/audio.service';
 import { Word, CefrLevel } from '../../core/models';
 
 @Component({
@@ -209,7 +210,7 @@ import { Word, CefrLevel } from '../../core/models';
                 <!-- Audio button -->
                 <div class="mt-6 text-center">
                   <button
-                    (click)="playAudio(selectedWord()!.german)"
+                    (click)="playAudio(selectedWord()!.german, selectedWord()!.cefrLevel)"
                     class="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
                   >
                     <svg class="w-5 h-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -231,6 +232,7 @@ import { Word, CefrLevel } from '../../core/models';
 export class VocabularyComponent implements OnInit {
   private readonly vocabularyService = inject(VocabularyService);
   private readonly languageService = inject(LanguageService);
+  private readonly audioService = inject(AudioService);
 
   // State
   readonly words = signal<Word[]>([]);
@@ -342,9 +344,8 @@ export class VocabularyComponent implements OnInit {
     this.selectedWord.set(null);
   }
 
-  playAudio(word: string): void {
-    // TODO: Implement audio playback
-    console.log('Play audio for:', word);
+  playAudio(word: string, level?: CefrLevel): void {
+    this.audioService.playWord(word, level || 'A1');
   }
 
   getTranslation(word: Word): string {
