@@ -50,15 +50,51 @@ export interface ApiResponse<T> {
   };
 }
 
-// User Profile
+// User Role (per DATABASE.md user_role ENUM)
+export type UserRole = 'ROLE_USER' | 'ROLE_ADMIN' | 'ROLE_MODERATOR';
+
+// Achievement Type (per DATABASE.md achievement_type ENUM)
+export type AchievementType =
+  | 'FIRST_WORD'      // First word learned
+  | 'WORDS_10'        // 10 words learned
+  | 'WORDS_50'        // 50 words learned
+  | 'WORDS_100'       // 100 words learned
+  | 'WORDS_250'       // 250 words learned
+  | 'WORDS_500'       // 500 words learned
+  | 'WORDS_1000'      // 1000 words learned
+  | 'STREAK_3'        // 3 day streak
+  | 'STREAK_7'        // 7 day streak
+  | 'STREAK_14'       // 14 day streak
+  | 'STREAK_30'       // 30 day streak
+  | 'STREAK_100'      // 100 day streak
+  | 'PERFECT_SESSION' // 100% accuracy in a session
+  | 'ACCURACY_90'     // 90% overall accuracy
+  | 'COMPLETE_A1'     // Completed A1 level
+  | 'COMPLETE_A2'     // Completed A2 level
+  | 'COMPLETE_B1'     // Completed B1 level
+  | 'EARLY_BIRD'      // Practiced before 8 AM
+  | 'NIGHT_OWL'       // Practiced after 10 PM
+  | 'COMEBACK';       // Returned after 7+ days
+
+// User Achievement (per DATABASE.md user_achievements table)
+export interface UserAchievement {
+  id: number;
+  achievementType: AchievementType;
+  earnedAt: string;
+  metadata?: Record<string, any>;
+}
+
+// User Profile (per DATABASE.md users table)
 export interface UserProfile {
   id: number;
   email: string;
   displayName: string;
   avatarUrl: string | null;
+  role: UserRole;
   eloRating: number;
   currentStreak: number;
   longestStreak: number;
+  streakFreezesAvailable: number;
   totalWordsLearned: number;
   dailyGoal: number;
   uiLanguage: string;
@@ -68,6 +104,7 @@ export interface UserProfile {
   emailVerified: boolean;
   lastActiveAt: string;
   createdAt: string;
+  achievements?: UserAchievement[];
 }
 
 // Daily Stats
