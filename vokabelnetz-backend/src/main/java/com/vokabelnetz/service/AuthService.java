@@ -45,6 +45,7 @@ public class AuthService {
     private final JwtProperties jwtProperties;
     private final AppProperties appProperties;
     private final LoginAttemptService loginAttemptService;
+    private final EmailService emailService;
 
     private static final SecureRandom secureRandom = new SecureRandom();
 
@@ -80,6 +81,9 @@ public class AuthService {
         // Generate tokens
         String accessToken = jwtService.generateAccessToken(user);
         String refreshToken = createRefreshToken(user, httpRequest);
+
+        // Send welcome email
+        emailService.sendWelcomeEmail(user);
 
         log.info("New user registered: {}", user.getId());
 

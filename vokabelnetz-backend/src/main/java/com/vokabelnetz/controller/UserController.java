@@ -12,6 +12,7 @@ import com.vokabelnetz.entity.enums.UiLanguage;
 import com.vokabelnetz.exception.BadRequestException;
 import com.vokabelnetz.security.CurrentUser;
 import com.vokabelnetz.service.AuthService;
+import com.vokabelnetz.service.EmailService;
 import com.vokabelnetz.service.PasswordHistoryService;
 import com.vokabelnetz.service.UserService;
 import jakarta.validation.Valid;
@@ -38,6 +39,7 @@ public class UserController {
     private final AuthService authService;
     private final PasswordEncoder passwordEncoder;
     private final PasswordHistoryService passwordHistoryService;
+    private final EmailService emailService;
 
     /**
      * Get current user profile.
@@ -104,6 +106,9 @@ public class UserController {
         // Revoke all refresh tokens (security best practice)
         authService.logoutAll(user.getId());
 
+        // Send notification email
+        emailService.sendPasswordChangedNotification(user);
+
         log.info("User {} changed password", user.getId());
 
         return ResponseEntity.ok(ApiResponse.success(
@@ -130,6 +135,9 @@ public class UserController {
 
         // Revoke all sessions
         authService.logoutAll(user.getId());
+
+        // Send deletion confirmation email
+        emailService.sendAccountDeletedNotification(user);
 
         log.info("User {} deleted account", user.getId());
 

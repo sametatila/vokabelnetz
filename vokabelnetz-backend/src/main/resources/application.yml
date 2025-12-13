@@ -88,3 +88,25 @@ app:
   data:
     seed-mode: ${APP_DATA_SEED_MODE:VALIDATE}
     path: classpath:data/
+  mail:
+    enabled: ${APP_MAIL_ENABLED:false}
+    from-address: ${APP_MAIL_FROM:noreply@vokabelnetz.com}
+    from-name: Vokabelnetz
+    frontend-url: ${APP_FRONTEND_URL:http://localhost:4200}
+
+# Spring Mail Configuration
+spring.mail:
+  host: ${MAIL_HOST:smtp.gmail.com}
+  port: ${MAIL_PORT:587}
+  username: ${MAIL_USERNAME:}
+  password: ${MAIL_PASSWORD:}
+  properties:
+    mail:
+      smtp:
+        auth: true
+        starttls:
+          enable: true
+          required: true
+        connectiontimeout: 5000
+        timeout: 5000
+        writetimeout: 5000

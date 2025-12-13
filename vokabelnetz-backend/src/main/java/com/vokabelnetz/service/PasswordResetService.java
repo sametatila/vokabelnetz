@@ -1,5 +1,6 @@
 package com.vokabelnetz.service;
 
+import com.vokabelnetz.config.MailProperties;
 import com.vokabelnetz.entity.PasswordResetToken;
 import com.vokabelnetz.entity.User;
 import com.vokabelnetz.exception.BadRequestException;
@@ -39,6 +40,8 @@ public class PasswordResetService {
     private final PasswordResetTokenRepository tokenRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
+    private final MailProperties mailProperties;
 
     private static final SecureRandom secureRandom = new SecureRandom();
     private static final int TOKEN_EXPIRY_HOURS = 1;
@@ -95,9 +98,8 @@ public class PasswordResetService {
 
         log.info("Password reset token generated for user: {}", user.getId());
 
-        // TODO: In production, send email with reset link containing plainToken
-        // For development, log the token
-        log.debug("DEV: Password reset token: {}", plainToken);
+        // Send password reset email
+        emailService.sendPasswordResetEmail(user, plainToken);
     }
 
     /**
@@ -127,6 +129,9 @@ public class PasswordResetService {
 
         // Revoke all refresh tokens (security: force re-login)
         refreshTokenRepository.revokeAllByUserId(user.getId(), Instant.now(), "PASSWORD_RESET");
+
+        // Send notification email
+        emailService.sendPasswordChangedNotification(user);
 
         log.info("Password reset successful for user: {}", user.getId());
     }
