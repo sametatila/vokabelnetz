@@ -46,3 +46,45 @@ export interface ApiResponse<T> {
     message: string;
   };
 }
+
+// User Profile
+export interface UserProfile {
+  id: number;
+  email: string;
+  displayName: string;
+  avatarUrl: string | null;
+  eloRating: number;
+  currentStreak: number;
+  longestStreak: number;
+  totalWordsLearned: number;
+  dailyGoal: number;
+  uiLanguage: string;
+  sourceLanguage: string;
+  timezone: string;
+  isActive: boolean;
+  emailVerified: boolean;
+  lastActiveAt: string;
+  createdAt: string;
+}
+
+// Daily Stats
+export interface DailyStats {
+  statDate: string;
+  wordsReviewed: number;
+  wordsCorrect: number;
+  newWordsLearned: number;
+  sessionsCompleted: number;
+  totalTimeSeconds: number;
+  streakMaintained: boolean;
+}
+
+// Streak Status
+export interface StreakStatus {
+  currentStreak: number;
+  longestStreak: number;
+  streakStartDate: string | null;
+  lastActiveDate: string | null;
+  todayCompleted: boolean;
+  atRisk: boolean;
+  freezesAvailable: number;
+}
