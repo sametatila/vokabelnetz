@@ -4,6 +4,7 @@ import com.vokabelnetz.dto.request.AnswerRequest;
 import com.vokabelnetz.dto.request.StartSessionRequest;
 import com.vokabelnetz.dto.response.AnswerResult;
 import com.vokabelnetz.dto.response.ApiResponse;
+import com.vokabelnetz.dto.response.LearningSessionResponse;
 import com.vokabelnetz.dto.response.NextWordResult;
 import com.vokabelnetz.entity.LearningSession;
 import com.vokabelnetz.entity.User;
@@ -36,7 +37,7 @@ public class LearningController {
      * POST /api/learning/session/start
      */
     @PostMapping("/session/start")
-    public ResponseEntity<ApiResponse<LearningSession>> startSession(
+    public ResponseEntity<ApiResponse<LearningSessionResponse>> startSession(
         @CurrentUser User user,
         @RequestBody(required = false) StartSessionRequest request
     ) {
@@ -48,7 +49,13 @@ public class LearningController {
             ? request.getWordCount() : 20;
 
         LearningSession session = learningService.startSession(user, type, level);
-        return ResponseEntity.ok(ApiResponse.success(session));
+
+        // Get actual counts for the response
+        int reviewCount = learningService.getReviewCount(user);
+        int newCount = learningService.getNewWordsCount(user, level);
+
+        LearningSessionResponse response = LearningSessionResponse.from(session, reviewCount, newCount);
+        return ResponseEntity.ok(ApiResponse.success(response));
     }
 
     /**
@@ -56,11 +63,19 @@ public class LearningController {
      * GET /api/learning/session/current
      */
     @GetMapping("/session/current")
-    public ResponseEntity<ApiResponse<LearningSession>> getCurrentSession(
+    public ResponseEntity<ApiResponse<LearningSessionResponse>> getCurrentSession(
         @CurrentUser User user
     ) {
         LearningSession session = learningService.getCurrentSession(user);
-        return ResponseEntity.ok(ApiResponse.success(session));
+        if (session == null) {
+            return ResponseEntity.ok(ApiResponse.success(null));
+        }
+
+        int reviewCount = learningService.getReviewCount(user);
+        int newCount = learningService.getNewWordsCount(user, session.getCefrLevel());
+
+        LearningSessionResponse response = LearningSessionResponse.from(session, reviewCount, newCount);
+        return ResponseEntity.ok(ApiResponse.success(response));
     }
 
     /**

@@ -40,6 +40,22 @@ public interface WordRepository extends JpaRepository<Word, Long> {
     );
 
     /**
+     * Count new words for a user (words they haven't started learning).
+     */
+    @Query("""
+        SELECT COUNT(w) FROM Word w
+        WHERE w.isActive = true
+        AND w.cefrLevel = :cefrLevel
+        AND w.id NOT IN (
+            SELECT uwp.word.id FROM UserWordProgress uwp WHERE uwp.user.id = :userId
+        )
+        """)
+    int countNewWordsForUser(
+        @Param("userId") Long userId,
+        @Param("cefrLevel") CefrLevel cefrLevel
+    );
+
+    /**
      * Find words within Elo rating range.
      */
     @Query("""

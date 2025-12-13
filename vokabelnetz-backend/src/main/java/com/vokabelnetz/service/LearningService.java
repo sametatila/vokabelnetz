@@ -254,6 +254,13 @@ public class LearningService {
     }
 
     /**
+     * Get count of new words available for a user at a given level.
+     */
+    public int getNewWordsCount(User user, CefrLevel level) {
+        return wordRepository.countNewWordsForUser(user.getId(), level);
+    }
+
+    /**
      * Get quiz words (mixed review and new).
      */
     public List<Word> getQuizWords(User user, CefrLevel level, int count) {
