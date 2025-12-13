@@ -46,6 +46,7 @@ public class AuthService {
     private final AppProperties appProperties;
     private final LoginAttemptService loginAttemptService;
     private final EmailService emailService;
+    private final EmailVerificationService emailVerificationService;
 
     private static final SecureRandom secureRandom = new SecureRandom();
 
@@ -82,8 +83,8 @@ public class AuthService {
         String accessToken = jwtService.generateAccessToken(user);
         String refreshToken = createRefreshToken(user, httpRequest);
 
-        // Send welcome email
-        emailService.sendWelcomeEmail(user);
+        // Send email verification (welcome email will be sent after verification)
+        emailVerificationService.createAndSendVerificationToken(user, httpRequest);
 
         log.info("New user registered: {}", user.getId());
 
@@ -297,21 +298,14 @@ public class AuthService {
 
     /**
      * Verify email with token.
-     * Note: In a full implementation, this would verify a token sent via email.
-     * For now, this is a placeholder that marks the email as verified.
      */
     @Transactional
     public void verifyEmail(String token) {
-        // In a real implementation:
-        // 1. Find the email verification token
-        // 2. Validate it's not expired
-        // 3. Mark the user's email as verified
-        // 4. Invalidate the token
+        User user = emailVerificationService.verifyEmail(token);
 
-        // For now, just log the attempt
-        log.info("Email verification attempted with token: {}", token.substring(0, Math.min(10, token.length())) + "...");
+        // Send welcome email after successful verification
+        emailService.sendWelcomeEmail(user);
 
-        // TODO: Implement full email verification flow
-        throw new com.vokabelnetz.exception.BadRequestException("Email verification not yet implemented");
+        log.info("Email verified for user: {}", user.getId());
     }
 }

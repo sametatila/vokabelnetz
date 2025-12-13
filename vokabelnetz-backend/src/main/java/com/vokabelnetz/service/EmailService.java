@@ -86,6 +86,20 @@ public class EmailService {
     }
 
     /**
+     * Send email verification email.
+     */
+    @Async
+    public void sendEmailVerificationEmail(User user, String verificationToken) {
+        String verifyUrl = mailProperties.getFrontendUrl() + "/auth/verify-email?token=" + verificationToken;
+
+        String subject = "Vokabelnetz - Verify Your Email Address";
+        String body = buildEmailVerificationEmailBody(user.getDisplayName(), verifyUrl);
+
+        sendEmail(user.getEmail(), subject, body);
+        log.info("Email verification email sent to user: {}", user.getId());
+    }
+
+    /**
      * Send streak reminder email.
      */
     @Async
@@ -394,6 +408,41 @@ public class EmailService {
             </body>
             </html>
             """.formatted(name, wordsLearned, wordsReviewed, currentStreak, dashboardUrl);
+    }
+
+    private String buildEmailVerificationEmailBody(String displayName, String verifyUrl) {
+        String name = displayName != null ? displayName : "there";
+        return """
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <style>
+                    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+                    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+                    .button { display: inline-block; padding: 12px 24px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 4px; margin: 20px 0; }
+                    .info { background-color: #e7f3ff; border: 1px solid #0066cc; padding: 15px; border-radius: 4px; margin: 20px 0; }
+                    .footer { margin-top: 30px; font-size: 12px; color: #666; }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <h2>Verify Your Email Address</h2>
+                    <p>Hello %s,</p>
+                    <p>Thank you for registering with Vokabelnetz! Please verify your email address by clicking the button below:</p>
+                    <a href="%s" class="button">Verify Email</a>
+                    <div class="info">
+                        <strong>Note:</strong> This link will expire in <strong>7 days</strong>.
+                    </div>
+                    <p>If you didn't create an account with Vokabelnetz, please ignore this email.</p>
+                    <div class="footer">
+                        <p>- Vokabelnetz Team</p>
+                        <p>If the button doesn't work, copy and paste this link: %s</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+            """.formatted(name, verifyUrl, verifyUrl);
     }
 
     /**

@@ -11,6 +11,7 @@ import com.vokabelnetz.entity.RefreshToken;
 import com.vokabelnetz.entity.User;
 import com.vokabelnetz.security.CurrentUser;
 import com.vokabelnetz.service.AuthService;
+import com.vokabelnetz.service.EmailVerificationService;
 import com.vokabelnetz.service.PasswordResetService;
 import com.vokabelnetz.service.SessionService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -34,6 +35,7 @@ public class AuthController {
     private final AuthService authService;
     private final PasswordResetService passwordResetService;
     private final SessionService sessionService;
+    private final EmailVerificationService emailVerificationService;
 
     /**
      * Register a new user.
@@ -142,6 +144,21 @@ public class AuthController {
         authService.verifyEmail(token);
         return ResponseEntity.ok(ApiResponse.success(
             Map.of("message", "Email verified successfully")
+        ));
+    }
+
+    /**
+     * Resend email verification.
+     * POST /api/auth/resend-verification
+     */
+    @PostMapping("/resend-verification")
+    public ResponseEntity<ApiResponse<Map<String, String>>> resendVerification(
+        @CurrentUser User user,
+        HttpServletRequest httpRequest
+    ) {
+        emailVerificationService.resendVerificationEmail(user, httpRequest);
+        return ResponseEntity.ok(ApiResponse.success(
+            Map.of("message", "Verification email sent")
         ));
     }
 

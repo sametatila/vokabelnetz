@@ -1,5 +1,6 @@
 package com.vokabelnetz.scheduler;
 
+import com.vokabelnetz.repository.EmailVerificationTokenRepository;
 import com.vokabelnetz.repository.PasswordResetTokenRepository;
 import com.vokabelnetz.repository.RefreshTokenRepository;
 import com.vokabelnetz.repository.UserRepository;
@@ -25,6 +26,7 @@ public class DataRetentionScheduler {
     private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final PasswordResetTokenRepository passwordResetTokenRepository;
+    private final EmailVerificationTokenRepository emailVerificationTokenRepository;
 
     /**
      * Permanently delete soft-deleted users after 30 days.
@@ -70,6 +72,21 @@ public class DataRetentionScheduler {
         int deleted = passwordResetTokenRepository.deleteExpiredTokens(cutoffDate);
 
         log.info("Deleted {} expired password reset tokens", deleted);
+    }
+
+    /**
+     * Clean up expired and used email verification tokens.
+     * Runs daily at 04:45.
+     */
+    @Scheduled(cron = "0 45 4 * * *") // 04:45 every day
+    @Transactional
+    public void cleanupEmailVerificationTokens() {
+        log.info("Starting email verification token cleanup job...");
+
+        Instant cutoffDate = Instant.now().minus(7, ChronoUnit.DAYS);
+        int deleted = emailVerificationTokenRepository.deleteExpiredTokens(cutoffDate);
+
+        log.info("Deleted {} expired email verification tokens", deleted);
     }
 
     /**
