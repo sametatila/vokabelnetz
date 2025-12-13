@@ -85,6 +85,8 @@ springdoc:
 
 # Application Configuration
 app:
+  cookie:
+    secure: ${APP_COOKIE_SECURE:false}
   data:
     seed-mode: ${APP_DATA_SEED_MODE:VALIDATE}
     path: classpath:data/

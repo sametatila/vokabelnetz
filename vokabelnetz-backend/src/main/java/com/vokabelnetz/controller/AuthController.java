@@ -14,80 +14,154 @@ import com.vokabelnetz.service.AuthService;
 import com.vokabelnetz.service.EmailVerificationService;
 import com.vokabelnetz.service.PasswordResetService;
 import com.vokabelnetz.service.SessionService;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 
 /**
  * Authentication controller.
  * Based on API.md and SECURITY.md documentation.
+ *
+ * Implements secure token management:
+ * - Access token returned in response body (stored in memory by frontend)
+ * - Refresh token set as HttpOnly cookie (not accessible via JavaScript)
  */
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
+    private static final String REFRESH_TOKEN_COOKIE = "refresh_token";
+    private static final Duration REFRESH_TOKEN_DURATION = Duration.ofDays(7);
+
     private final AuthService authService;
     private final PasswordResetService passwordResetService;
     private final SessionService sessionService;
     private final EmailVerificationService emailVerificationService;
 
+    @Value("${app.cookie.secure:false}")
+    private boolean secureCookie;
+
     /**
      * Register a new user.
      * POST /api/auth/register
+     * Sets refresh token as HttpOnly cookie.
      */
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<AuthResponse>> register(
         @Valid @RequestBody RegisterRequest request,
-        HttpServletRequest httpRequest
+        HttpServletRequest httpRequest,
+        HttpServletResponse httpResponse
     ) {
         AuthResponse response = authService.register(request, httpRequest);
+        setRefreshTokenCookie(httpResponse, response.getRefreshToken());
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
     /**
      * Login with email and password.
      * POST /api/auth/login
+     * Sets refresh token as HttpOnly cookie.
      */
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<AuthResponse>> login(
         @Valid @RequestBody LoginRequest request,
-        HttpServletRequest httpRequest
+        HttpServletRequest httpRequest,
+        HttpServletResponse httpResponse
     ) {
         AuthResponse response = authService.login(request, httpRequest);
+        setRefreshTokenCookie(httpResponse, response.getRefreshToken());
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
     /**
      * Refresh access token.
      * POST /api/auth/refresh
+     * Reads refresh token from HttpOnly cookie.
+     * Sets new refresh token as HttpOnly cookie (token rotation).
      */
     @PostMapping("/refresh")
     public ResponseEntity<ApiResponse<AuthResponse>> refresh(
-        @RequestBody Map<String, String> request,
-        HttpServletRequest httpRequest
+        @CookieValue(name = REFRESH_TOKEN_COOKIE, required = false) String cookieToken,
+        @RequestBody(required = false) Map<String, String> request,
+        HttpServletRequest httpRequest,
+        HttpServletResponse httpResponse
     ) {
-        String refreshToken = request.get("refreshToken");
+        // Prefer cookie token, fall back to body for backwards compatibility
+        String refreshToken = cookieToken != null ? cookieToken :
+            (request != null ? request.get("refreshToken") : null);
+
+        if (refreshToken == null || refreshToken.isBlank()) {
+            throw new com.vokabelnetz.exception.InvalidTokenException("No refresh token provided");
+        }
+
         AuthResponse response = authService.refreshTokens(refreshToken, httpRequest);
+        setRefreshTokenCookie(httpResponse, response.getRefreshToken());
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
     /**
      * Logout - revoke refresh token.
      * POST /api/auth/logout
+     * Clears the refresh token cookie.
      */
     @PostMapping("/logout")
     public ResponseEntity<ApiResponse<Map<String, String>>> logout(
-        @RequestBody Map<String, String> request
+        @CookieValue(name = REFRESH_TOKEN_COOKIE, required = false) String cookieToken,
+        @RequestBody(required = false) Map<String, String> request,
+        HttpServletResponse httpResponse
     ) {
-        String refreshToken = request.get("refreshToken");
-        authService.logout(refreshToken);
+        // Prefer cookie token, fall back to body for backwards compatibility
+        String refreshToken = cookieToken != null ? cookieToken :
+            (request != null ? request.get("refreshToken") : null);
+
+        if (refreshToken != null) {
+            authService.logout(refreshToken);
+        }
+
+        clearRefreshTokenCookie(httpResponse);
         return ResponseEntity.ok(ApiResponse.success(Map.of("message", "Logged out successfully")));
+    }
+
+    /**
+     * Set refresh token as HttpOnly cookie.
+     */
+    private void setRefreshTokenCookie(HttpServletResponse response, String token) {
+        ResponseCookie cookie = ResponseCookie.from(REFRESH_TOKEN_COOKIE, token)
+            .httpOnly(true)
+            .secure(secureCookie)
+            .sameSite("Lax")  // Lax allows the cookie to be sent on top-level navigations
+            .path("/api/auth")
+            .maxAge(REFRESH_TOKEN_DURATION)
+            .build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+    }
+
+    /**
+     * Clear refresh token cookie.
+     */
+    private void clearRefreshTokenCookie(HttpServletResponse response) {
+        ResponseCookie cookie = ResponseCookie.from(REFRESH_TOKEN_COOKIE, "")
+            .httpOnly(true)
+            .secure(secureCookie)
+            .sameSite("Lax")
+            .path("/api/auth")
+            .maxAge(0)  // Immediate expiration
+            .build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
     }
 
     /**

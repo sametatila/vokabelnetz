@@ -53,7 +53,7 @@ export class AuthStore {
       error: null,
       initialized: true
     }));
-    // Note: refreshToken should be handled via HttpOnly cookie by the server
+    // Note: refreshToken is handled via HttpOnly cookie by the server
   }
 
   /**
@@ -115,14 +115,5 @@ export class AuthStore {
    */
   getAccessToken(): string | null {
     return this.state().accessToken;
-  }
-
-  /**
-   * Get refresh token - deprecated, use HttpOnly cookie instead.
-   * @deprecated Server should handle refresh token via HttpOnly cookie
-   */
-  refreshToken(): string | null {
-    console.warn('refreshToken() is deprecated. Server should use HttpOnly cookie.');
-    return null;
   }
 }
