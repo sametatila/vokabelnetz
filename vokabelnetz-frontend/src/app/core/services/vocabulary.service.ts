@@ -66,6 +66,20 @@ export class VocabularyService {
   }
 
   /**
+   * Get words by category.
+   */
+  getWordsByCategory(category: string, page = 0, size = 20): Observable<ApiResponse<Word[]> & { meta: WordsResponse['meta'] }> {
+    const params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString());
+
+    return this.http.get<ApiResponse<Word[]> & { meta: WordsResponse['meta'] }>(
+      `${this.apiUrl}/words/category/${category}`,
+      { params }
+    );
+  }
+
+  /**
    * Search words by German term.
    */
   searchWords(query: string, page = 0, size = 20): Observable<ApiResponse<Word[]> & { meta: WordsResponse['meta'] }> {

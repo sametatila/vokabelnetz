@@ -9,6 +9,9 @@ export interface RegisterRequest {
   password: string;
   displayName: string;
   nativeLanguage: 'TURKISH' | 'ENGLISH';
+  uiLanguage?: string;
+  sourceLanguage?: string;
+  timezone?: string;
 }
 
 export interface ForgotPasswordRequest {
@@ -110,6 +113,24 @@ export interface LearningSession {
   startedAt: string;
 }
 
+// Word Category
+export type WordCategory =
+  | 'ALLTAG'
+  | 'ARBEIT_BERUF'
+  | 'BILDUNG'
+  | 'ESSEN_TRINKEN'
+  | 'FAMILIE'
+  | 'FREIZEIT'
+  | 'GESUNDHEIT'
+  | 'KOMMUNIKATION'
+  | 'NATUR'
+  | 'REISEN'
+  | 'SPORT'
+  | 'TECHNIK'
+  | 'WOHNEN'
+  | 'ZAHLEN_ZEIT'
+  | 'SONSTIGES';
+
 // Word
 export interface Word {
   id: number;
@@ -127,6 +148,9 @@ export interface Word {
     en: string;
   };
   audioUrl?: string;
+  phoneticSpelling?: string;
+  pluralForm?: string;
+  category?: WordCategory;
   difficultyRating: number;
 }
 

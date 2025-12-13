@@ -90,4 +90,24 @@ export class LearningService {
       `${this.apiUrl}/learning/review/count`
     );
   }
+
+  /**
+   * Get new words to learn.
+   */
+  getNewWords(limit: number = 20): Observable<ApiResponse<ReviewWordsResponse>> {
+    return this.http.get<ApiResponse<ReviewWordsResponse>>(
+      `${this.apiUrl}/learning/new`,
+      { params: { limit: limit.toString() } }
+    );
+  }
+
+  /**
+   * Get quiz words for quick practice.
+   */
+  getQuizWords(limit: number = 10): Observable<ApiResponse<ReviewWordsResponse>> {
+    return this.http.get<ApiResponse<ReviewWordsResponse>>(
+      `${this.apiUrl}/learning/quiz`,
+      { params: { limit: limit.toString() } }
+    );
+  }
 }
