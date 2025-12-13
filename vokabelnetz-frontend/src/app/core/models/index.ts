@@ -51,7 +51,7 @@ export interface ApiResponse<T> {
 }
 
 // User Role (per DATABASE.md user_role ENUM)
-export type UserRole = 'ROLE_USER' | 'ROLE_ADMIN' | 'ROLE_MODERATOR';
+export type UserRole = 'ROLE_USER' | 'ROLE_ADMIN' | 'ROLE_SUPER';
 
 // Achievement Type (per DATABASE.md achievement_type ENUM)
 export type AchievementType =
@@ -76,12 +76,11 @@ export type AchievementType =
   | 'NIGHT_OWL'       // Practiced after 10 PM
   | 'COMEBACK';       // Returned after 7+ days
 
-// User Achievement (per DATABASE.md user_achievements table)
+// User Achievement (per DATABASE.md JSONB storage format)
+// Stored as JSON array in users.achievements column
 export interface UserAchievement {
-  id: number;
-  achievementType: AchievementType;
+  type: AchievementType;
   earnedAt: string;
-  metadata?: Record<string, any>;
 }
 
 // User Profile (per DATABASE.md users table)
