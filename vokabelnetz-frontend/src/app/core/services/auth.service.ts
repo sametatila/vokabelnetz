@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, tap, catchError, throwError, finalize } from 'rxjs';
 import { AuthStore } from './auth.store';
-import { LoginRequest, RegisterRequest, AuthResponse, ApiResponse } from '../models';
+import { LoginRequest, RegisterRequest, ForgotPasswordRequest, ResetPasswordRequest, AuthResponse, ApiResponse } from '../models';
 
 @Injectable({
   providedIn: 'root'
@@ -99,5 +99,47 @@ export class AuthService {
   private clearAndRedirect(): void {
     this.authStore.clearAuth();
     this.router.navigate(['/auth/login']);
+  }
+
+  /**
+   * Request password reset email.
+   */
+  forgotPassword(request: ForgotPasswordRequest): Observable<ApiResponse<{ message: string }>> {
+    this.authStore.setLoading(true);
+
+    return this.http.post<ApiResponse<{ message: string }>>(
+      `${this.apiUrl}/auth/forgot-password`,
+      request
+    ).pipe(
+      finalize(() => this.authStore.setLoading(false))
+    );
+  }
+
+  /**
+   * Reset password with token.
+   */
+  resetPassword(request: ResetPasswordRequest): Observable<ApiResponse<{ message: string }>> {
+    this.authStore.setLoading(true);
+
+    return this.http.post<ApiResponse<{ message: string }>>(
+      `${this.apiUrl}/auth/reset-password`,
+      request
+    ).pipe(
+      finalize(() => this.authStore.setLoading(false))
+    );
+  }
+
+  /**
+   * Verify email with token.
+   */
+  verifyEmail(token: string): Observable<ApiResponse<{ message: string }>> {
+    this.authStore.setLoading(true);
+
+    return this.http.get<ApiResponse<{ message: string }>>(
+      `${this.apiUrl}/auth/verify-email`,
+      { params: { token } }
+    ).pipe(
+      finalize(() => this.authStore.setLoading(false))
+    );
   }
 }

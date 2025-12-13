@@ -11,6 +11,15 @@ export interface RegisterRequest {
   nativeLanguage: 'TURKISH' | 'ENGLISH';
 }
 
+export interface ForgotPasswordRequest {
+  email: string;
+}
+
+export interface ResetPasswordRequest {
+  token: string;
+  newPassword: string;
+}
+
 export interface AuthResponse {
   success: boolean;
   data: {
