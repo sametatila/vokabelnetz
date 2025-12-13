@@ -77,16 +77,22 @@ export class AuthService {
 
   /**
    * Refresh access token using HttpOnly cookie.
+   * Returns full auth response including user data.
    */
-  refreshToken(): Observable<ApiResponse<{ accessToken: string; refreshToken: string }>> {
-    return this.http.post<ApiResponse<{ accessToken: string; refreshToken: string }>>(
+  refreshToken(): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(
       `${this.apiUrl}/auth/refresh`,
       {},
       { withCredentials: true }
     ).pipe(
       tap(response => {
         if (response.success && response.data) {
-          this.authStore.updateTokens(response.data.accessToken, response.data.refreshToken);
+          // Set full auth state including user
+          this.authStore.setAuth(
+            response.data.accessToken,
+            response.data.refreshToken,
+            response.data.user
+          );
         }
       })
     );
@@ -96,7 +102,7 @@ export class AuthService {
    * Initialize auth state on app startup.
    * Attempts to get new access token using refresh cookie.
    */
-  initializeAuth(): Observable<ApiResponse<{ accessToken: string; refreshToken: string }>> {
+  initializeAuth(): Observable<AuthResponse> {
     this.authStore.setLoading(true);
 
     return this.refreshToken().pipe(
