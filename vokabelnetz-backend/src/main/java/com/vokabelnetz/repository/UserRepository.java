@@ -2,10 +2,12 @@ package com.vokabelnetz.repository;
 
 import com.vokabelnetz.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,4 +43,16 @@ public interface UserRepository extends JpaRepository<User, Long> {
         AND p.streakReminders = true
         """)
     List<User> findUsersNeedingStreakReminder();
+
+    /**
+     * Find all active users (not deleted).
+     */
+    List<User> findByIsActiveTrueAndDeletedAtIsNull();
+
+    /**
+     * Permanently delete soft-deleted users older than cutoff date.
+     */
+    @Modifying
+    @Query("DELETE FROM User u WHERE u.deletedAt IS NOT NULL AND u.deletedAt < :cutoffDate")
+    int deleteByDeletedAtBefore(@Param("cutoffDate") LocalDateTime cutoffDate);
 }

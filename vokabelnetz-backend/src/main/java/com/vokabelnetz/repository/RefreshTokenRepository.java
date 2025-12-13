@@ -69,4 +69,18 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long
         AND rt.expiresAt > :now
         """)
     long countActiveByUserId(@Param("userId") Long userId, @Param("now") Instant now);
+
+    /**
+     * Delete expired tokens (for cleanup scheduler).
+     */
+    @Modifying
+    @Query("DELETE FROM RefreshToken rt WHERE rt.expiresAt < :cutoffDate")
+    int deleteExpiredTokens(@Param("cutoffDate") Instant cutoffDate);
+
+    /**
+     * Delete old revoked tokens (for cleanup scheduler).
+     */
+    @Modifying
+    @Query("DELETE FROM RefreshToken rt WHERE rt.isRevoked = true AND rt.revokedAt < :cutoffDate")
+    int deleteRevokedTokensOlderThan(@Param("cutoffDate") Instant cutoffDate);
 }

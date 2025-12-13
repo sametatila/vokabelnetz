@@ -48,4 +48,11 @@ public interface PasswordResetTokenRepository extends JpaRepository<PasswordRese
     @Modifying
     @Query("DELETE FROM PasswordResetToken prt WHERE prt.expiresAt < :before")
     int deleteExpiredBefore(@Param("before") Instant before);
+
+    /**
+     * Delete expired or used tokens (for cleanup scheduler).
+     */
+    @Modifying
+    @Query("DELETE FROM PasswordResetToken prt WHERE prt.expiresAt < :cutoffDate OR prt.usedAt IS NOT NULL")
+    int deleteExpiredTokens(@Param("cutoffDate") Instant cutoffDate);
 }
