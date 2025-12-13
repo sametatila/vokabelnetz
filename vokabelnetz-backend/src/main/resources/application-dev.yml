@@ -26,3 +26,8 @@ logging:
 springdoc:
   swagger-ui:
     enabled: true
+
+# Data seeding - INIT for first run, UPDATE for subsequent, VALIDATE to check files only
+app:
+  data:
+    seed-mode: INIT

@@ -73,4 +73,14 @@ public interface WordRepository extends JpaRepository<Word, Long> {
         AND LOWER(w.german) LIKE LOWER(CONCAT('%', :searchTerm, '%'))
         """)
     Page<Word> searchByGerman(@Param("searchTerm") String searchTerm, Pageable pageable);
+
+    /**
+     * Find word by German term and CEFR level (for data seeding).
+     */
+    Word findByGermanAndCefrLevel(String german, CefrLevel cefrLevel);
+
+    /**
+     * Check if word exists by German term and CEFR level.
+     */
+    boolean existsByGermanAndCefrLevel(String german, CefrLevel cefrLevel);
 }

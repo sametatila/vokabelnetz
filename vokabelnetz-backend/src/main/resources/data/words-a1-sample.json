@@ -1,0 +1,261 @@
+{
+  "metadata": {
+    "level": "A1",
+    "source": "Goethe Institut Wortliste",
+    "version": "2025.1",
+    "wordCount": 10,
+    "lastUpdated": "2025-01-01"
+  },
+  "words": [
+    {
+      "german": "arbeiten",
+      "article": null,
+      "wordType": "VERB",
+      "plural": null,
+      "translations": {
+        "tr": "calismak",
+        "en": "to work"
+      },
+      "examples": {
+        "de": "Ich arbeite in einem Buro.",
+        "tr": "Bir ofiste calisiyorum.",
+        "en": "I work in an office."
+      },
+      "category": "ARBEIT_BERUF",
+      "tags": ["daily", "common"],
+      "pronunciation": {
+        "ipa": "arbaitn",
+        "audioFile": "arbeiten.mp3"
+      },
+      "difficulty": {
+        "initial": 900,
+        "notes": "Common verb, regular conjugation"
+      }
+    },
+    {
+      "german": "Haus",
+      "article": "das",
+      "wordType": "NOUN",
+      "plural": "Hauser",
+      "translations": {
+        "tr": "ev",
+        "en": "house"
+      },
+      "examples": {
+        "de": "Wir wohnen in einem grossen Haus.",
+        "tr": "Buyuk bir evde yasiyoruz.",
+        "en": "We live in a big house."
+      },
+      "category": "WOHNEN",
+      "tags": ["home", "building"],
+      "pronunciation": {
+        "ipa": "haus",
+        "audioFile": "haus.mp3"
+      },
+      "difficulty": {
+        "initial": 800,
+        "notes": "Very common noun, neuter"
+      }
+    },
+    {
+      "german": "Familie",
+      "article": "die",
+      "wordType": "NOUN",
+      "plural": "Familien",
+      "translations": {
+        "tr": "aile",
+        "en": "family"
+      },
+      "examples": {
+        "de": "Meine Familie ist sehr gross.",
+        "tr": "Ailem cok buyuk.",
+        "en": "My family is very big."
+      },
+      "category": "FAMILIE_FREUNDE",
+      "tags": ["family", "people"],
+      "pronunciation": {
+        "ipa": "familie",
+        "audioFile": "familie.mp3"
+      },
+      "difficulty": {
+        "initial": 850,
+        "notes": "Common noun, feminine"
+      }
+    },
+    {
+      "german": "essen",
+      "article": null,
+      "wordType": "VERB",
+      "plural": null,
+      "translations": {
+        "tr": "yemek yemek",
+        "en": "to eat"
+      },
+      "examples": {
+        "de": "Wir essen zusammen zu Abend.",
+        "tr": "Birlikte aksam yemegi yiyoruz.",
+        "en": "We eat dinner together."
+      },
+      "category": "ESSEN_TRINKEN",
+      "tags": ["food", "daily"],
+      "pronunciation": {
+        "ipa": "esn",
+        "audioFile": "essen.mp3"
+      },
+      "difficulty": {
+        "initial": 800,
+        "notes": "Common verb, irregular"
+      }
+    },
+    {
+      "german": "Freund",
+      "article": "der",
+      "wordType": "NOUN",
+      "plural": "Freunde",
+      "translations": {
+        "tr": "arkadas",
+        "en": "friend"
+      },
+      "examples": {
+        "de": "Er ist mein bester Freund.",
+        "tr": "O benim en iyi arkadasim.",
+        "en": "He is my best friend."
+      },
+      "category": "FAMILIE_FREUNDE",
+      "tags": ["people", "relationship"],
+      "pronunciation": {
+        "ipa": "froynt",
+        "audioFile": "freund.mp3"
+      },
+      "difficulty": {
+        "initial": 850,
+        "notes": "Common noun, masculine"
+      }
+    },
+    {
+      "german": "gehen",
+      "article": null,
+      "wordType": "VERB",
+      "plural": null,
+      "translations": {
+        "tr": "gitmek",
+        "en": "to go"
+      },
+      "examples": {
+        "de": "Ich gehe in die Schule.",
+        "tr": "Okula gidiyorum.",
+        "en": "I go to school."
+      },
+      "category": "ALLTAG",
+      "tags": ["movement", "common"],
+      "pronunciation": {
+        "ipa": "geen",
+        "audioFile": "gehen.mp3"
+      },
+      "difficulty": {
+        "initial": 850,
+        "notes": "Common verb, irregular"
+      }
+    },
+    {
+      "german": "Wasser",
+      "article": "das",
+      "wordType": "NOUN",
+      "plural": null,
+      "translations": {
+        "tr": "su",
+        "en": "water"
+      },
+      "examples": {
+        "de": "Ich trinke Wasser.",
+        "tr": "Su iciyorum.",
+        "en": "I drink water."
+      },
+      "category": "ESSEN_TRINKEN",
+      "tags": ["drink", "basic"],
+      "pronunciation": {
+        "ipa": "vasr",
+        "audioFile": "wasser.mp3"
+      },
+      "difficulty": {
+        "initial": 750,
+        "notes": "Very common noun, neuter"
+      }
+    },
+    {
+      "german": "gut",
+      "article": null,
+      "wordType": "ADJECTIVE",
+      "plural": null,
+      "translations": {
+        "tr": "iyi",
+        "en": "good"
+      },
+      "examples": {
+        "de": "Das Essen ist sehr gut.",
+        "tr": "Yemek cok iyi.",
+        "en": "The food is very good."
+      },
+      "category": "ALLTAG",
+      "tags": ["basic", "common"],
+      "pronunciation": {
+        "ipa": "gut",
+        "audioFile": "gut.mp3"
+      },
+      "difficulty": {
+        "initial": 700,
+        "notes": "Very common adjective"
+      }
+    },
+    {
+      "german": "Schule",
+      "article": "die",
+      "wordType": "NOUN",
+      "plural": "Schulen",
+      "translations": {
+        "tr": "okul",
+        "en": "school"
+      },
+      "examples": {
+        "de": "Die Schule beginnt um 8 Uhr.",
+        "tr": "Okul saat 8'de basliyor.",
+        "en": "School starts at 8 o'clock."
+      },
+      "category": "BILDUNG",
+      "tags": ["education", "building"],
+      "pronunciation": {
+        "ipa": "shule",
+        "audioFile": "schule.mp3"
+      },
+      "difficulty": {
+        "initial": 800,
+        "notes": "Common noun, feminine"
+      }
+    },
+    {
+      "german": "sprechen",
+      "article": null,
+      "wordType": "VERB",
+      "plural": null,
+      "translations": {
+        "tr": "konusmak",
+        "en": "to speak"
+      },
+      "examples": {
+        "de": "Ich spreche Deutsch.",
+        "tr": "Almanca konusuyorum.",
+        "en": "I speak German."
+      },
+      "category": "ALLTAG",
+      "tags": ["communication", "common"],
+      "pronunciation": {
+        "ipa": "shprechn",
+        "audioFile": "sprechen.mp3"
+      },
+      "difficulty": {
+        "initial": 900,
+        "notes": "Common verb, irregular"
+      }
+    }
+  ]
+}
