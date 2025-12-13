@@ -51,7 +51,7 @@ export const routes: Routes = [
       },
       {
         path: 'vocabulary',
-        loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent) // Placeholder
+        loadComponent: () => import('./features/vocabulary/vocabulary.component').then(m => m.VocabularyComponent)
       },
       {
         path: 'progress',
