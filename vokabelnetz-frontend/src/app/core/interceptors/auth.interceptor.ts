@@ -23,12 +23,15 @@ export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>, ne
     req.url.includes('/auth/reset-password') ||
     req.url.includes('/auth/verify-email');
 
-  // Auth endpoints that need cookies (refresh, logout)
+  // Auth endpoints that need cookies (login, register, refresh, logout)
   const isAuthCookieEndpoint =
+    req.url.includes('/auth/login') ||
+    req.url.includes('/auth/register') ||
     req.url.includes('/auth/refresh') ||
     req.url.includes('/auth/logout');
 
   // Clone request with withCredentials for cookie-based auth endpoints
+  // This ensures browser accepts Set-Cookie from login/register responses
   if (isAuthCookieEndpoint) {
     req = req.clone({ withCredentials: true });
   }
