@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ApiResponse, Word, CefrLevel } from '../models';
+import { environment } from '../../../environments/environment';
 
 export interface WordsResponse {
   data: Word[];
@@ -26,7 +27,7 @@ export interface WordStats {
 @Injectable({ providedIn: 'root' })
 export class VocabularyService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = 'http://localhost:8080/api';
+  private readonly apiUrl = environment.apiUrl;
 
   /**
    * Get all words (paginated).

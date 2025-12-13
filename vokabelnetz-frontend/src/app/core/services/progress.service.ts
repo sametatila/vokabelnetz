@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ApiResponse, CefrLevel } from '../models';
+import { environment } from '../../../environments/environment';
 
 // Overall Progress
 export interface OverallProgress {
@@ -120,7 +121,7 @@ export interface PeriodStats {
 @Injectable({ providedIn: 'root' })
 export class ProgressService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = 'http://localhost:8080/api';
+  private readonly apiUrl = environment.apiUrl;
 
   /**
    * Get overall statistics.

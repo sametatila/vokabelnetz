@@ -3,7 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, tap, catchError, throwError, finalize } from 'rxjs';
 import { AuthStore } from '../state/auth.store';
-import { LoginRequest, RegisterRequest, ForgotPasswordRequest, ResetPasswordRequest, AuthResponse, ApiResponse } from '../models';
+import { LoginRequest, RegisterRequest, ForgotPasswordRequest, ResetPasswordRequest, AuthResponse, ApiResponse, SessionsResponse } from '../models';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +14,7 @@ export class AuthService {
   private readonly router = inject(Router);
   private readonly authStore = inject(AuthStore);
 
-  private readonly apiUrl = 'http://localhost:8080/api';
+  private readonly apiUrl = environment.apiUrl;
 
   /**
    * Login user with email and password.
@@ -152,6 +153,37 @@ export class AuthService {
       { params: { token } }
     ).pipe(
       finalize(() => this.authStore.setLoading(false))
+    );
+  }
+
+  /**
+   * Logout from all devices.
+   * Revokes ALL refresh tokens for the user.
+   */
+  logoutAll(): Observable<ApiResponse<{ sessionsRevoked: number }>> {
+    return this.http.post<ApiResponse<{ sessionsRevoked: number }>>(
+      `${this.apiUrl}/auth/logout-all`,
+      {}
+    ).pipe(
+      tap(() => this.clearAndRedirect())
+    );
+  }
+
+  /**
+   * Get list of active sessions.
+   */
+  getSessions(): Observable<ApiResponse<SessionsResponse>> {
+    return this.http.get<ApiResponse<SessionsResponse>>(
+      `${this.apiUrl}/auth/sessions`
+    );
+  }
+
+  /**
+   * Revoke a specific session by ID.
+   */
+  revokeSession(sessionId: number): Observable<ApiResponse<{ message: string }>> {
+    return this.http.delete<ApiResponse<{ message: string }>>(
+      `${this.apiUrl}/auth/sessions/${sessionId}`
     );
   }
 }

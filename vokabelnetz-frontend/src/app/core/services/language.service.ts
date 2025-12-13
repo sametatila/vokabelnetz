@@ -1,4 +1,5 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, inject, effect } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 
 export type UiLanguage = 'tr' | 'en' | 'de';
 export type SourceLanguage = 'tr' | 'en';
@@ -19,6 +20,8 @@ interface LanguageSettings {
  */
 @Injectable({ providedIn: 'root' })
 export class LanguageService {
+  private readonly translate = inject(TranslateService);
+
   // Signals for reactive state
   readonly currentUiLanguage = signal<UiLanguage>(this.detectDefaultLanguage());
   readonly currentSourceLanguage = signal<SourceLanguage>(this.detectDefaultSourceLanguage());
@@ -26,6 +29,18 @@ export class LanguageService {
 
   constructor() {
     this.loadPersistedSettings();
+
+    // Set up available languages
+    this.translate.addLangs(['en', 'tr', 'de']);
+    this.translate.setDefaultLang('en');
+
+    // Sync TranslateService with current UI language
+    this.translate.use(this.currentUiLanguage());
+
+    // Keep TranslateService in sync when UI language changes
+    effect(() => {
+      this.translate.use(this.currentUiLanguage());
+    });
   }
 
   /**

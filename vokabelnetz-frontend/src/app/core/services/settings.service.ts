@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ApiResponse, UserProfile } from '../models';
+import { environment } from '../../../environments/environment';
 
 // User Preferences
 export interface UserPreferences {
@@ -59,7 +60,7 @@ export interface DeleteAccountRequest {
 @Injectable({ providedIn: 'root' })
 export class SettingsService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = 'http://localhost:8080/api';
+  private readonly apiUrl = environment.apiUrl;
 
   /**
    * Get current user profile.

@@ -228,3 +228,18 @@ export interface ReviewWordsResponse {
   overdueCount: number;
   dueTodayCount: number;
 }
+
+// Session Management (per API.md Auth Endpoints)
+export interface SessionInfo {
+  id: number;
+  deviceInfo: string;
+  ipAddress: string;
+  createdAt: string;
+  lastUsedAt: string;
+  isCurrent: boolean;
+}
+
+export interface SessionsResponse {
+  sessions: SessionInfo[];
+  totalSessions: number;
+}

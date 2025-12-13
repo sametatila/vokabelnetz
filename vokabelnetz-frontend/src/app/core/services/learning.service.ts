@@ -11,6 +11,7 @@ import {
   SessionSummary,
   ReviewWordsResponse
 } from '../models';
+import { environment } from '../../../environments/environment';
 
 /**
  * LearningService - Handles learning session API calls.
@@ -20,7 +21,7 @@ import {
 @Injectable({ providedIn: 'root' })
 export class LearningService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = 'http://localhost:8080/api';
+  private readonly apiUrl = environment.apiUrl;
 
   /**
    * Start a new learning session.
